@@ -1,0 +1,93 @@
+diff --git a/sic-gen.py b/sic-gen.py
+index 7e6bd0e..1349512 100644
+--- a/sic-gen.py
++++ b/sic-gen.py
+@@ -12,6 +12,7 @@ import json
+ import logging
+ import math
+ import numpy as np
++import random
+ import validation
+ from distributions import weibull
+ from functools import partial
+@@ -26,6 +27,7 @@ parser.add_argument('-n', '--subjects', action='store', type=int, nargs='?', def
+ parser.add_argument('-d', '--directory', action='store', type=Path, nargs='?', default="generated", help='relative path to directory where the generated Iris-Codes will be stored (default: /generated/)')
+ parser.add_argument('-p', '--processes', action='store', type=int, nargs='?', default=1, help='number of CPU processes to use (default: 1)')
+ parser.add_argument('-v', '--validate', action='store_true', help='run statistical validation after generation of templates')
++parser.add_argument('-s', '--seed', action='store', type=int, nargs='?', default=None, help='base random seed for reproducible generation (default: unseeded)')
+ parser.add_argument('-l', '--logging', action='count', help='logging verbosity level (default is warning, -l for info and -ll for debug)')
+ parser.add_argument('--version', action='version', version='%(prog)s 1.0')
+ args = parser.parse_args()
+@@ -44,7 +46,7 @@ noise_template_target_hd = 0.4
+ noise_template_refresh_chance = 0.1
+ initial_rows, initial_columns = 32, 512
+ target_rows, target_columns = 64, 512
+-downsampling_every_n_row, downsampling_every_n_column = 8, 2 # 0, 0 to keep the target_rows, target_columns size
++downsampling_every_n_row, downsampling_every_n_column = 2, 0 # 0, 0 to keep the target_rows, target_columns size
+ arch_side_probabilities = (0.45, 0.45, 0.1) # l, r, None
+ barcode_max_shifts = 10
+ probe_shifts_mu_sigma = (2,5)
+@@ -180,6 +182,14 @@ def flip_templates(temp_ic: Template, template_hd: float) -> Tuple[Template, Tem
+ 	
+ def produce(subdirectories: List[int]) -> None:
+ 	'''Produce iris-codes segragated into subdirectories.'''
++	if args.seed is not None:
++		# Offset by the chunk's first subject number so parallel workers
++		# (separate processes under 'spawn') don't share identical RNG state.
++		# template.py's flip_edge() draws from the stdlib `random` module
++		# rather than numpy's, so both streams must be seeded.
++		worker_seed = args.seed + int(subdirectories[0])
++		np.random.seed(worker_seed)
++		random.seed(worker_seed)
+ 	for subject_num, (reference, probe) in enumerate(IrisCodeGenerator(len(subdirectories), partial(weibull, 5))):
+ 		save_dir = args.directory / Path(str(subdirectories[subject_num]))
+ 		reference.to_image(save_dir / Path("1.bmp"))
+diff --git a/template.py b/template.py
+index 8f67412..43f3876 100644
+--- a/template.py
++++ b/template.py
+@@ -193,11 +193,11 @@ class Template(object):
+ 			x_start = np.random.randint(0, noise_ic._template.shape[0] // 2)
+ 			y_start = np.random.randint(0, noise_ic._template.shape[1] // 2)
+ 			random_noise = noise_ic._template[x_start:x_start+x_l+1, y_start:y_start+y_l+1]
+-			np.logical_or(random_noise, arch[min_x:min_x+x_l+1, min_y:min_y+y_l+1], out=arch[min_x:min_x+x_l+1, min_y:min_y+y_l+1], dtype=np.uint8)
++			np.logical_or(random_noise, arch[min_x:min_x+x_l+1, min_y:min_y+y_l+1], out=arch[min_x:min_x+x_l+1, min_y:min_y+y_l+1])
+ 
+ 			# Replace the template area beneath the arch with noise
+ 			self._template[arch_mask] = 0
+-			np.logical_or(self._template, arch, out=self._template, dtype=np.uint8)
++			np.logical_or(self._template, arch, out=self._template)
+ 
+ 			# Invert the mask (needed for HD calculations when templates are compared)
+ 			self._mask = np.logical_not(arch_mask).astype(np.uint8)
+@@ -284,7 +284,7 @@ class Template(object):
+ 		'''Saves a template (and mask, if present) to text file(s).'''
+ 		for name, item in vars(self).items():
+ 			if item is not None:
+-				path.parent.mkdir(exist_ok=True)
++				path.parent.mkdir(parents=True, exist_ok=True)
+ 				save_path = str(path.parent / Path(str(path.stem) + name + path.suffix))
+ 				np.savetxt(save_path, item, fmt="%u", delimiter="", newline=os.linesep)
+ 
+@@ -292,7 +292,7 @@ class Template(object):
+ 		'''Saves a template (and mask, if present) to image file(s).'''
+ 		for name, item in vars(self).items():
+ 			if item is not None:
+-				path.parent.mkdir(exist_ok=True)
++				path.parent.mkdir(parents=True, exist_ok=True)
+ 				save_item = np.array(item, dtype=np.uint8)
+ 				save_item[save_item == 0] = 255
+ 				save_item[save_item == 1] = 0
+diff --git a/validation.py b/validation.py
+index 4787bb4..a5d3997 100644
+--- a/validation.py
++++ b/validation.py
+@@ -100,7 +100,7 @@ def hamming_distance_validation(processes: int, ic_sample: List[np.ndarray], rot
+ 	plt.hist(all_hds["genuine_rot"], weights=weights_g, bins=50, color="white", edgecolor="green", alpha=0.75, linewidth=2)
+ 	plt.hist(all_hds["impostor_rot"], weights=weights_i, bins=50, color="white", edgecolor="red", alpha=0.75, linewidth=2)
+ 	plt.margins(0.025)
+-	plt.title("Histograms of all HDs with alignment ($\pm$%d bits)" % rotations, size=18)
++	plt.title(r"Histograms of all HDs with alignment ($\pm$%d bits)" % rotations, size=18)
+ 	plt.xlabel("HD", size=16)
+ 	plt.ylabel("Probability Density", size=16)
+ 	plt.grid(True, which="both")
