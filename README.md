@@ -108,6 +108,7 @@ process count re-partitions subjects into different chunks. The exact diff is ca
 | File | What it does |
 |---|---|
 | `validate_gen.py` | Standalone genuine/impostor fractional-HD check (aligned ±*r* vs unaligned) for a generated directory; two-panel histogram. General sanity check, not part of Stage 1/2/3. |
+| `run_christina_rl.py` | Runs Christina's enhanced-RL feature (`compute_enhanced_run_stats`/`compute_l1_distance_plaintext` from `christina-fhe-fis/filter_fhe_iris_complete.py`, imported read-only) on the 300-subject gallery under both SIC-Gen mask conventions (raw vs. inverted), reporting Recall@K/median/mean rank/dimension/dropped-row-% side by side via her own `compute_recall_at_k`. |
 
 ## Results (`results/`)
 
