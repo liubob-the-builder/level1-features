@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "data_source_real": "casia-extraction/casia-codes-2d/ (real CASIA-Iris-Thousand via Open Iris)",
+    "data_source_synthetic": "level1-features/results/stage2_results.json + stage2_ranks.npz (SIC-Gen sicgen_gallery_2000subjects -- NOTE: 2000 subjects, not 300; recall@K is not directly comparable across different gallery sizes N, since more distractor candidates generally lowers recall at fixed K independent of feature quality)",
+    "casia_manifest": "casia-extraction/manifest.json",
+    "real_identity_count": 300,
+    "real_gallery_size": 300,
+    "real_probe_count": 2441,
+    "subject_selection_rule": "first 150 subjects, sorted numerically by subject ID",
+    "synthetic_gallery_size": 2000,
+    "mask_handling": {
+      "DFT": "mask-blind -- code_magnitude_spectrum(template, ...) takes only the template, no mask parameter anywhere in dft_spectrum.py. On real CASIA (67.7% valid), occluded bits are included in the FFT as if they were real iris texture; this was built and tuned on synthetic SIC-Gen codes, which are ~90-100% valid, so this caveat had little effect there but matters here.",
+      "AC": "mask-aware -- row_autocorrelation(row, mask) computes joint_valid = m * m_shifted and divides by its sum, so only bit-pairs where BOTH positions are valid (mask==1) contribute to R(lag); occluded bits are correctly excluded, using the same 1=valid convention real CASIA masks use. No caveat needed for AC.",
+      "RL-C9": "mask-blind -- extract_rl_vector(template, C) takes only the template, no mask parameter in rl_features.py. Run-length histograms are computed over the raw bit array including occluded positions, which can create spurious/split runs at occlusion boundaries on real data.",
+      "RL-C6": "mask-blind -- same extract_rl_vector() as RL-C9, just C=6; identical caveat."
+    },
+    "mask_handling_note": "No feature logic was modified for this run. DFT and RL are evaluated mask-blind, exactly as stage2_evaluate.py calls them, for comparability with the synthetic Stage 2 numbers; this means real occlusion is not being excluded for those two features, which the recall/EER numbers below should be read in light of.",
+    "git_commit": "37324d17b3c7bd59539a5de5648a7c6218362044",
+    "date": "2026-08-08",
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "failure_rank_threshold": 50,
+    "method_note": "Same feature extraction and SSD-ranking method as stage2_evaluate.py (ssd_matrix, eer, d_prime imported unmodified). Ranking generalized from stage2_evaluate.py's diagonal-of-square-matrix assumption (1 probe per subject, same order as gallery) to real CASIA's 1 gallery + 3-9 probes per identity: every probe is scored against all 300 galleries, and its true gallery's rank is looked up by identity rather than assumed to be at the same row/column index."
+  },
+  "results_real": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 17.0,
+      "mean_rank": 43.50266284309709,
+      "eer": 0.24126235341346755,
+      "d_prime": 1.3024162299785873,
+      "recall@10": 0.4309709135600164,
+      "recall@20": 0.5305202785743548,
+      "recall@50": 0.7107742728390004,
+      "recall@100": 0.8545678000819337,
+      "recall@150": 0.9270790659565752,
+      "recall@300": 1.0
+    },
+    "AC": {
+      "dim": 160,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 14.0,
+      "mean_rank": 48.88160589922163,
+      "eer": 0.30229194954093874,
+      "d_prime": 0.5913068840500411,
+      "recall@10": 0.46251536255632936,
+      "recall@20": 0.5542810323637853,
+      "recall@50": 0.7017615731257681,
+      "recall@100": 0.8160589922163048,
+      "recall@150": 0.8902089307660794,
+      "recall@300": 1.0
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 10.0,
+      "mean_rank": 39.265055305202786,
+      "eer": 0.23836795874271605,
+      "d_prime": 1.2090087133456908,
+      "recall@10": 0.5022531749283081,
+      "recall@20": 0.6104055714870954,
+      "recall@50": 0.7566571077427284,
+      "recall@100": 0.8680868496517821,
+      "recall@150": 0.9209340434248259,
+      "recall@300": 1.0
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 11.0,
+      "mean_rank": 40.31585415813191,
+      "eer": 0.23978672592925482,
+      "d_prime": 1.204217792229053,
+      "recall@10": 0.4911921343711594,
+      "recall@20": 0.5931995083981975,
+      "recall@50": 0.7513314215485457,
+      "recall@100": 0.8648095043015158,
+      "recall@150": 0.9201147070872593,
+      "recall@300": 1.0
+    }
+  },
+  "results_synthetic": {
+    "DFT": {
+      "dim": 21,
+      "recall@10": 0.895,
+      "recall@50": 0.97,
+      "recall@100": 0.9865,
+      "recall@300": 0.999,
+      "median_rank": 1.0,
+      "mean_rank": 6.8835,
+      "eer": 0.029000000000000012,
+      "d_prime": 1.6605790072859736,
+      "recall@20": 0.9345,
+      "recall@150": 0.993
+    },
+    "AC": {
+      "dim": 160,
+      "recall@10": 0.885,
+      "recall@50": 0.9535,
+      "recall@100": 0.975,
+      "recall@300": 0.9925,
+      "median_rank": 1.0,
+      "mean_rank": 11.768,
+      "eer": 0.05746285642821411,
+      "d_prime": 2.171372709678716,
+      "recall@20": 0.9195,
+      "recall@150": 0.9825
+    },
+    "RL-C9": {
+      "dim": 576,
+      "recall@10": 0.6325,
+      "recall@50": 0.813,
+      "recall@100": 0.88,
+      "recall@300": 0.9495,
+      "median_rank": 3.0,
+      "mean_rank": 52.073,
+      "eer": 0.11441958479239622,
+      "d_prime": 2.3532550883118293,
+      "recall@20": 0.7115,
+      "recall@150": 0.906
+    },
+    "RL-C6": {
+      "dim": 384,
+      "recall@10": 0.5745,
+      "recall@50": 0.7765,
+      "recall@100": 0.8525,
+      "recall@300": 0.9455,
+      "median_rank": 5.5,
+      "mean_rank": 60.9725,
+      "eer": 0.1190443971985993,
+      "d_prime": 2.2905892914468247,
+      "recall@20": 0.665,
+      "recall@150": 0.899
+    }
+  },
+  "spearman_real": {
+    "DFT-AC": {
+      "rho": 0.30610424031832045,
+      "pval": 4.111583696549142e-54
+    },
+    "DFT-RL-C9": {
+      "rho": 0.30840527157698905,
+      "pval": 6.078899821971651e-55
+    },
+    "DFT-RL-C6": {
+      "rho": 0.2984118708882007,
+      "pval": 2.165062862656089e-51
+    },
+    "AC-RL-C9": {
+      "rho": 0.33192690236977435,
+      "pval": 7.286295306723981e-64
+    },
+    "AC-RL-C6": {
+      "rho": 0.32024106599180185,
+      "pval": 2.481546103914528e-59
+    },
+    "RL-C9-RL-C6": {
+      "rho": 0.9766623611010479,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_real": {
+    "DFT-AC": 0.23090128755364808,
+    "DFT-RL-C9": 0.2369172216936251,
+    "DFT-RL-C6": 0.24219489120151372,
+    "AC-RL-C9": 0.2309124767225326,
+    "AC-RL-C6": 0.22589531680440772,
+    "RL-C9-RL-C6": 0.8765625
+  },
+  "failure_set_sizes_real": {
+    "DFT": 706,
+    "AC": 728,
+    "RL-C9": 594,
+    "RL-C6": 607
+  },
+  "spearman_synthetic": {
+    "DFT-AC": {
+      "rho": 0.19999400614291235,
+      "pval": 1.720093809627824e-19
+    },
+    "DFT-RL-C9": {
+      "rho": 0.22739403993562063,
+      "pval": 7.178537289076273e-25
+    },
+    "DFT-RL-C6": {
+      "rho": 0.251574580264769,
+      "pval": 3.029862845525073e-30
+    },
+    "AC-RL-C9": {
+      "rho": 0.42514083938481523,
+      "pval": 1.342453170367778e-88
+    },
+    "AC-RL-C6": {
+      "rho": 0.37660134404282686,
+      "pval": 2.0648037622972017e-68
+    },
+    "RL-C9-RL-C6": {
+      "rho": 0.7676422927640757,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_synthetic": {
+    "DFT-AC": 0.033783783783783786,
+    "DFT-RL-C9": 0.03827751196172249,
+    "DFT-RL-C6": 0.049689440993788817,
+    "AC-RL-C9": 0.11455847255369929,
+    "AC-RL-C6": 0.10882956878850103,
+    "RL-C9-RL-C6": 0.4660714285714286
+  }
+}

@@ -109,6 +109,8 @@ process count re-partitions subjects into different chunks. The exact diff is ca
 |---|---|
 | `validate_gen.py` | Standalone genuine/impostor fractional-HD check (aligned ±*r* vs unaligned) for a generated directory; two-panel histogram. General sanity check, not part of Stage 1/2/3. |
 | `run_christina_rl.py` | Runs Christina's enhanced-RL feature (`compute_enhanced_run_stats`/`compute_l1_distance_plaintext` from `christina-fhe-fis/filter_fhe_iris_complete.py`, imported read-only) on the 300-subject gallery under both SIC-Gen mask conventions (raw vs. inverted), reporting Recall@K/median/mean rank/dimension/dropped-row-% side by side via her own `compute_recall_at_k`. |
+| `run_christina_rl_casia.py` | Real-CASIA replication of `run_christina_rl.py`: runs her feature (unmodified, `(32,512)` codes fed with no reshaping, reproducing her real 32-pseudo-scale behavior) on 300 real CASIA-Iris-Thousand identities from `casia-extraction/casia-codes-christina/` under both mask conventions, and compares Recall@50 against the paper's reported real-CASIA RL figure. |
+| `eval_myfeatures_realcasia.py` | Real-CASIA validation of Stage 2: runs DFT/AC/RL-C9/RL-C6 (same extraction calls as `stage2_evaluate.py`, generalized to real CASIA's 1-gallery/3-9-probes-per-identity structure) on `casia-extraction/casia-codes-2d/`, reporting Recall@K/median/mean rank/EER/d′ and Spearman/Jaccard error-correlation side by side with the synthetic Stage 2 numbers, plus mask-handling notes per feature (DFT/RL are mask-blind, AC is mask-aware). |
 
 ## Results (`results/`)
 
