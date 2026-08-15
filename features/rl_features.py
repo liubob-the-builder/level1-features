@@ -31,26 +31,49 @@ __all__ = [
 ]
 
 
-def row_rl_histogram(row: np.ndarray, C: int) -> np.ndarray:
+def row_rl_histogram(row: np.ndarray, C: int, mask: Optional[np.ndarray] = None) -> np.ndarray:
     """Compute the 2C-element run-length histogram for a single binary row.
 
     First C elements count 0-runs by length; next C count 1-runs by length.
     Bin index = min(run_length - 1, C - 1), so the last bin accumulates all
     runs of length >= C.
+
+    Args:
+        mask: Optional binary array of same shape as row (1 = valid, 0 =
+              occluded). If None (default), the row is treated as fully
+              valid -- current mask-blind behavior, unchanged. If given,
+              runs are computed only within maximal contiguous runs of
+              valid bits: an occluded bit terminates whatever run precedes
+              it and is not itself counted, and no run crosses an occluded
+              gap. Each valid segment is handled independently (no
+              wraparound across a gap or across the row boundary), matching
+              the mask-blind path's existing non-circular boundary handling.
     """
-    hist = np.zeros(2 * C, dtype=np.int32)
-    if len(row) == 0:
+    if mask is None:
+        hist = np.zeros(2 * C, dtype=np.int32)
+        if len(row) == 0:
+            return hist
+        changes = np.where(np.diff(row.astype(np.int8)))[0] + 1
+        boundaries = np.concatenate(([0], changes, [len(row)]))
+        run_lengths = np.diff(boundaries)
+        run_values = row[boundaries[:-1]]          # value (0 or 1) of each run
+        bin_indices = np.minimum(run_lengths - 1, C - 1) + run_values.astype(np.int32) * C
+        np.add.at(hist, bin_indices, 1)
         return hist
-    changes = np.where(np.diff(row.astype(np.int8)))[0] + 1
-    boundaries = np.concatenate(([0], changes, [len(row)]))
-    run_lengths = np.diff(boundaries)
-    run_values = row[boundaries[:-1]]          # value (0 or 1) of each run
-    bin_indices = np.minimum(run_lengths - 1, C - 1) + run_values.astype(np.int32) * C
-    np.add.at(hist, bin_indices, 1)
+
+    hist = np.zeros(2 * C, dtype=np.int32)
+    valid = mask.astype(bool)
+    if not valid.any():
+        return hist
+    seg_changes = np.where(np.diff(valid.astype(np.int8)))[0] + 1
+    seg_boundaries = np.concatenate(([0], seg_changes, [len(valid)]))
+    for start, end in zip(seg_boundaries[:-1], seg_boundaries[1:]):
+        if valid[start]:
+            hist += row_rl_histogram(row[start:end], C)
     return hist
 
 
-def extract_rl_vector(template: np.ndarray, C: int = 9) -> np.ndarray:
+def extract_rl_vector(template: np.ndarray, C: int = 9, mask: Optional[np.ndarray] = None) -> np.ndarray:
     """Extract the run-length histogram feature vector from an iris code.
 
     Args:
@@ -58,11 +81,20 @@ def extract_rl_vector(template: np.ndarray, C: int = 9) -> np.ndarray:
         C:        Number of histogram bins. Default 9 → 576-dim vector for
                   32-row iris codes (matching the paper's stated dimensionality).
                   Use C=6 for the 384-dim variant if preferred.
+        mask:     Optional binary array of same shape as template (1 = valid,
+                  0 = occluded). Default None reproduces the exact mask-blind
+                  behavior used for all existing synthetic (SIC-Gen) results.
+                  If given, occluded bits are excluded from run-length
+                  counting per row (see row_rl_histogram) -- this applies
+                  identically regardless of C, so both RL-C9 and RL-C6
+                  become mask-aware from this single change.
 
     Returns:
         Integer array of shape (n_rows * 2C,).
     """
-    return np.concatenate([row_rl_histogram(row, C) for row in template])
+    if mask is None:
+        return np.concatenate([row_rl_histogram(row, C) for row in template])
+    return np.concatenate([row_rl_histogram(row, C, mask=m) for row, m in zip(template, mask)])
 
 
 def compute_ssd(v1: np.ndarray, v2: np.ndarray) -> float:

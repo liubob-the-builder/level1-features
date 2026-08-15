@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "gallery": "sic-gen/sicgen_gallery_2000subjects",
+    "n_subjects": 2000,
+    "mask_convention": "1=valid, 0=occluded -- confirmed via sic-gen/template.py's Template.add_noise, which sets self._mask = np.logical_not(arch_mask) (arch_mask marks the occluded region, so the stored mask is 1 exactly where a bit is valid/unoccluded); matches the convention real CASIA masks use and that the mask-aware DFT/RL code expects.",
+    "synthetic_mask_valid_fraction_mean": 0.9398148040771485,
+    "synthetic_mask_valid_fraction_min": 0.8543701171875,
+    "synthetic_mask_valid_fraction_max": 1.0,
+    "real_casia_mask_valid_fraction_mean_for_comparison": 0.677,
+    "mask_handling": {
+      "DFT": "mask-aware -- code_magnitude_spectrum(template, mask=mask). Rows with valid fraction < 0.5 dropped from the average; kept rows mean-filled. Bins 30-50 kept, same as mask-blind.",
+      "RL-C9": "mask-aware -- extract_rl_vector(template, C=9, mask=mask). Run-lengths computed only within contiguous valid-bit segments.",
+      "RL-C6": "mask-aware -- same as RL-C9, C=6."
+    },
+    "mask_blind_baseline_source": "level1-features/results/stage2_results.json",
+    "ac_note": "AC excluded from this run -- it was already mask-aware in stage2_evaluate.py, so its synthetic numbers are identical under both conventions by construction.",
+    "dft_min_valid_frac_threshold": 0.5,
+    "feature_defaults_unchanged": "mask=None in dft_spectrum.py/rl_features.py still reproduces the exact prior mask-blind behavior; stage2_results.json itself was not modified or recomputed by this script.",
+    "git_commit": "09634baf0dcea74cdf959a0862c8447f42ec964f",
+    "date": "2026-08-13",
+    "k_values": [
+      10,
+      50,
+      100,
+      300
+    ],
+    "method_note": "Same bijective gallery/probe SSD-ranking method as stage2_evaluate.py (ssd_matrix, eer, d_prime imported unmodified; true-identity rank read off the SSD matrix diagonal)."
+  },
+  "results_maskaware": {
+    "DFT": {
+      "dim": 21,
+      "median_rank": 1.0,
+      "mean_rank": 2.3575,
+      "eer": 0.013433966983491724,
+      "d_prime": 1.6932467261730149,
+      "recall@10": 0.967,
+      "recall@50": 0.9965,
+      "recall@100": 0.999,
+      "recall@300": 1.0
+    },
+    "RL-C9": {
+      "dim": 576,
+      "median_rank": 3.0,
+      "mean_rank": 44.6395,
+      "eer": 0.10945872936468237,
+      "d_prime": 2.402604270585951,
+      "recall@10": 0.658,
+      "recall@50": 0.834,
+      "recall@100": 0.8905,
+      "recall@300": 0.959
+    },
+    "RL-C6": {
+      "dim": 384,
+      "median_rank": 6.0,
+      "mean_rank": 66.226,
+      "eer": 0.1208926963481741,
+      "d_prime": 2.2532937500116246,
+      "recall@10": 0.568,
+      "recall@50": 0.762,
+      "recall@100": 0.844,
+      "recall@300": 0.9365
+    }
+  },
+  "results_maskblind": {
+    "DFT": {
+      "dim": 21,
+      "recall@10": 0.895,
+      "recall@50": 0.97,
+      "recall@100": 0.9865,
+      "recall@300": 0.999,
+      "median_rank": 1.0,
+      "mean_rank": 6.8835,
+      "eer": 0.029000000000000012,
+      "d_prime": 1.6605790072859736
+    },
+    "RL-C9": {
+      "dim": 576,
+      "recall@10": 0.6325,
+      "recall@50": 0.813,
+      "recall@100": 0.88,
+      "recall@300": 0.9495,
+      "median_rank": 3.0,
+      "mean_rank": 52.073,
+      "eer": 0.11441958479239622,
+      "d_prime": 2.3532550883118293
+    },
+    "RL-C6": {
+      "dim": 384,
+      "recall@10": 0.5745,
+      "recall@50": 0.7765,
+      "recall@100": 0.8525,
+      "recall@300": 0.9455,
+      "median_rank": 5.5,
+      "mean_rank": 60.9725,
+      "eer": 0.1190443971985993,
+      "d_prime": 2.2905892914468247
+    }
+  },
+  "comparison": {
+    "DFT": {
+      "mask_blind": {
+        "dim": 21,
+        "recall@10": 0.895,
+        "recall@50": 0.97,
+        "recall@100": 0.9865,
+        "recall@300": 0.999,
+        "median_rank": 1.0,
+        "mean_rank": 6.8835,
+        "eer": 0.029000000000000012,
+        "d_prime": 1.6605790072859736
+      },
+      "mask_aware": {
+        "dim": 21,
+        "median_rank": 1.0,
+        "mean_rank": 2.3575,
+        "eer": 0.013433966983491724,
+        "d_prime": 1.6932467261730149,
+        "recall@10": 0.967,
+        "recall@50": 0.9965,
+        "recall@100": 0.999,
+        "recall@300": 1.0
+      }
+    },
+    "RL-C9": {
+      "mask_blind": {
+        "dim": 576,
+        "recall@10": 0.6325,
+        "recall@50": 0.813,
+        "recall@100": 0.88,
+        "recall@300": 0.9495,
+        "median_rank": 3.0,
+        "mean_rank": 52.073,
+        "eer": 0.11441958479239622,
+        "d_prime": 2.3532550883118293
+      },
+      "mask_aware": {
+        "dim": 576,
+        "median_rank": 3.0,
+        "mean_rank": 44.6395,
+        "eer": 0.10945872936468237,
+        "d_prime": 2.402604270585951,
+        "recall@10": 0.658,
+        "recall@50": 0.834,
+        "recall@100": 0.8905,
+        "recall@300": 0.959
+      }
+    },
+    "RL-C6": {
+      "mask_blind": {
+        "dim": 384,
+        "recall@10": 0.5745,
+        "recall@50": 0.7765,
+        "recall@100": 0.8525,
+        "recall@300": 0.9455,
+        "median_rank": 5.5,
+        "mean_rank": 60.9725,
+        "eer": 0.1190443971985993,
+        "d_prime": 2.2905892914468247
+      },
+      "mask_aware": {
+        "dim": 384,
+        "median_rank": 6.0,
+        "mean_rank": 66.226,
+        "eer": 0.1208926963481741,
+        "d_prime": 2.2532937500116246,
+        "recall@10": 0.568,
+        "recall@50": 0.762,
+        "recall@100": 0.844,
+        "recall@300": 0.9365
+      }
+    }
+  }
+}

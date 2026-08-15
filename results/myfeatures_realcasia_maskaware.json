@@ -1,0 +1,322 @@
+{
+  "metadata": {
+    "data_source_real": "casia-extraction/casia-codes-2d/ (real CASIA-Iris-Thousand via Open Iris)",
+    "data_source_synthetic": "level1-features/results/stage2_results.json + stage2_ranks.npz (SIC-Gen sicgen_gallery_2000subjects, run mask-blind -- NOTE: 2000 subjects, not 300; recall@K is not directly comparable across different gallery sizes N)",
+    "mask_blind_comparison_source": "level1-features/results/myfeatures_realcasia.json",
+    "casia_manifest": "casia-extraction/manifest.json",
+    "real_identity_count": 300,
+    "real_gallery_size": 300,
+    "real_probe_count": 2441,
+    "subject_selection_rule": "first 150 subjects, sorted numerically by subject ID",
+    "synthetic_gallery_size": 2000,
+    "mask_handling": {
+      "DFT": "mask-aware -- code_magnitude_spectrum(template, mask=mask) called with the mask. Per row: if valid fraction < 0.5 the row is dropped from the across-row average; kept rows have occluded bits mean-filled with that row's own valid-bit mean before the FFT. Bins 30-50 kept, same as the mask-blind run. Default behavior (mask=None) is unchanged, so synthetic Stage 1/2/3 results still reproduce exactly.",
+      "AC": "mask-aware -- identical computation to the mask-blind run (AC was already mask-aware: row_autocorrelation only counts bit-pairs where both positions are valid).",
+      "RL-C9": "mask-aware -- extract_rl_vector(template, C=9, mask=mask) called with the mask. Run-lengths are computed only within maximal contiguous runs of valid bits; an occluded bit terminates the run it interrupts and is not itself counted. Default behavior (mask=None) is unchanged, so synthetic Stage 1/2/3 results still reproduce exactly.",
+      "RL-C6": "mask-aware -- same extract_rl_vector(..., mask=mask) path as RL-C9, just C=6; identical caveat."
+    },
+    "mask_handling_note": "DFT and RL-C9/RL-C6 now use their new optional mask parameter on real CASIA data; AC's numbers here are the same computation as in the mask-blind run (it was already mask-aware). Feature module defaults (mask=None) are unchanged, so this run does not affect reproducibility of any existing synthetic result.",
+    "dft_min_valid_frac_threshold": 0.5,
+    "dft_fill_method": "occluded bits mean-filled with that row's own valid-bit mean before FFT; rows below the valid-fraction threshold are dropped from the across-row average",
+    "rl_mask_method": "run-lengths computed only within maximal contiguous runs of valid bits; an occluded bit terminates the run it interrupts and is not counted",
+    "feature_defaults_unchanged": "mask=None still reproduces the exact prior mask-blind behavior in both dft_spectrum.py and rl_features.py; no existing synthetic result is affected by this change.",
+    "git_commit": "09634baf0dcea74cdf959a0862c8447f42ec964f",
+    "date": "2026-08-10",
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "failure_rank_threshold": 50,
+    "method_note": "Same feature extraction and SSD-ranking method as eval_myfeatures_realcasia.py, with DFT/RL-C9/RL-C6 now called through their new optional mask parameter. ssd_matrix, eer, d_prime imported unmodified from stage2_evaluate.py."
+  },
+  "results_real_maskaware": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 6.0,
+      "mean_rank": 30.438344940598114,
+      "eer": 0.20278985393069074,
+      "d_prime": 1.2605076427758402,
+      "recall@10": 0.5829578041786153,
+      "recall@20": 0.6841458418680868,
+      "recall@50": 0.8140106513723884,
+      "recall@100": 0.9008603031544449,
+      "recall@150": 0.9459238017206063,
+      "recall@300": 1.0
+    },
+    "AC": {
+      "dim": 160,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 14.0,
+      "mean_rank": 48.88160589922163,
+      "eer": 0.30229194954093874,
+      "d_prime": 0.5913068840500411,
+      "recall@10": 0.46251536255632936,
+      "recall@20": 0.5542810323637853,
+      "recall@50": 0.7017615731257681,
+      "recall@100": 0.8160589922163048,
+      "recall@150": 0.8902089307660794,
+      "recall@300": 1.0
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 7.0,
+      "mean_rank": 32.589512494879145,
+      "eer": 0.22538325895823713,
+      "d_prime": 1.315610871658659,
+      "recall@10": 0.5571487095452683,
+      "recall@20": 0.662843097091356,
+      "recall@50": 0.7918885702580909,
+      "recall@100": 0.8816058992216305,
+      "recall@150": 0.9446947972142564,
+      "recall@300": 1.0
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 7.0,
+      "mean_rank": 31.879967226546498,
+      "eer": 0.21824831919589946,
+      "d_prime": 1.3279349001984029,
+      "recall@10": 0.5612453912331012,
+      "recall@20": 0.6579270790659566,
+      "recall@50": 0.7963949201147071,
+      "recall@100": 0.8865219172470299,
+      "recall@150": 0.9496108152396558,
+      "recall@300": 1.0
+    }
+  },
+  "results_real_maskblind": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 17.0,
+      "mean_rank": 43.50266284309709,
+      "eer": 0.24126235341346755,
+      "d_prime": 1.3024162299785873,
+      "recall@10": 0.4309709135600164,
+      "recall@20": 0.5305202785743548,
+      "recall@50": 0.7107742728390004,
+      "recall@100": 0.8545678000819337,
+      "recall@150": 0.9270790659565752,
+      "recall@300": 1.0
+    },
+    "AC": {
+      "dim": 160,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 14.0,
+      "mean_rank": 48.88160589922163,
+      "eer": 0.30229194954093874,
+      "d_prime": 0.5913068840500411,
+      "recall@10": 0.46251536255632936,
+      "recall@20": 0.5542810323637853,
+      "recall@50": 0.7017615731257681,
+      "recall@100": 0.8160589922163048,
+      "recall@150": 0.8902089307660794,
+      "recall@300": 1.0
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 10.0,
+      "mean_rank": 39.265055305202786,
+      "eer": 0.23836795874271605,
+      "d_prime": 1.2090087133456908,
+      "recall@10": 0.5022531749283081,
+      "recall@20": 0.6104055714870954,
+      "recall@50": 0.7566571077427284,
+      "recall@100": 0.8680868496517821,
+      "recall@150": 0.9209340434248259,
+      "recall@300": 1.0
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 300,
+      "n_probe": 2441,
+      "median_rank": 11.0,
+      "mean_rank": 40.31585415813191,
+      "eer": 0.23978672592925482,
+      "d_prime": 1.204217792229053,
+      "recall@10": 0.4911921343711594,
+      "recall@20": 0.5931995083981975,
+      "recall@50": 0.7513314215485457,
+      "recall@100": 0.8648095043015158,
+      "recall@150": 0.9201147070872593,
+      "recall@300": 1.0
+    }
+  },
+  "results_synthetic": {
+    "DFT": {
+      "dim": 21,
+      "recall@10": 0.895,
+      "recall@50": 0.97,
+      "recall@100": 0.9865,
+      "recall@300": 0.999,
+      "median_rank": 1.0,
+      "mean_rank": 6.8835,
+      "eer": 0.029000000000000012,
+      "d_prime": 1.6605790072859736,
+      "recall@20": 0.9345,
+      "recall@150": 0.993
+    },
+    "AC": {
+      "dim": 160,
+      "recall@10": 0.885,
+      "recall@50": 0.9535,
+      "recall@100": 0.975,
+      "recall@300": 0.9925,
+      "median_rank": 1.0,
+      "mean_rank": 11.768,
+      "eer": 0.05746285642821411,
+      "d_prime": 2.171372709678716,
+      "recall@20": 0.9195,
+      "recall@150": 0.9825
+    },
+    "RL-C9": {
+      "dim": 576,
+      "recall@10": 0.6325,
+      "recall@50": 0.813,
+      "recall@100": 0.88,
+      "recall@300": 0.9495,
+      "median_rank": 3.0,
+      "mean_rank": 52.073,
+      "eer": 0.11441958479239622,
+      "d_prime": 2.3532550883118293,
+      "recall@20": 0.7115,
+      "recall@150": 0.906
+    },
+    "RL-C6": {
+      "dim": 384,
+      "recall@10": 0.5745,
+      "recall@50": 0.7765,
+      "recall@100": 0.8525,
+      "recall@300": 0.9455,
+      "median_rank": 5.5,
+      "mean_rank": 60.9725,
+      "eer": 0.1190443971985993,
+      "d_prime": 2.2905892914468247,
+      "recall@20": 0.665,
+      "recall@150": 0.899
+    }
+  },
+  "spearman_real_maskaware": {
+    "DFT-AC": {
+      "rho": 0.3240409771210743,
+      "pval": 8.76730154462708e-61
+    },
+    "DFT-RL-C9": {
+      "rho": 0.27637312304389877,
+      "pval": 4.814781734138635e-44
+    },
+    "DFT-RL-C6": {
+      "rho": 0.2933484992665524,
+      "pval": 1.207846547834354e-49
+    },
+    "AC-RL-C9": {
+      "rho": 0.28213894249380145,
+      "pval": 6.666501354719678e-46
+    },
+    "AC-RL-C6": {
+      "rho": 0.2903152781040762,
+      "pval": 1.2924315439690935e-48
+    },
+    "RL-C9-RL-C6": {
+      "rho": 0.9794115812153659,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_real_maskaware": {
+    "DFT-AC": 0.22233712512926576,
+    "DFT-RL-C9": 0.21158690176322417,
+    "DFT-RL-C6": 0.21611253196930946,
+    "AC-RL-C9": 0.2,
+    "AC-RL-C6": 0.20215897939156036,
+    "RL-C9-RL-C6": 0.9034090909090909
+  },
+  "failure_set_sizes_real_maskaware": {
+    "DFT": 454,
+    "AC": 728,
+    "RL-C9": 508,
+    "RL-C6": 497
+  },
+  "spearman_real_maskblind": {
+    "DFT-AC": {
+      "rho": 0.30610424031832045,
+      "pval": 4.111583696549142e-54
+    },
+    "DFT-RL-C9": {
+      "rho": 0.30840527157698905,
+      "pval": 6.078899821971651e-55
+    },
+    "DFT-RL-C6": {
+      "rho": 0.2984118708882007,
+      "pval": 2.165062862656089e-51
+    },
+    "AC-RL-C9": {
+      "rho": 0.33192690236977435,
+      "pval": 7.286295306723981e-64
+    },
+    "AC-RL-C6": {
+      "rho": 0.32024106599180185,
+      "pval": 2.481546103914528e-59
+    },
+    "RL-C9-RL-C6": {
+      "rho": 0.9766623611010479,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_real_maskblind": {
+    "DFT-AC": 0.23090128755364808,
+    "DFT-RL-C9": 0.2369172216936251,
+    "DFT-RL-C6": 0.24219489120151372,
+    "AC-RL-C9": 0.2309124767225326,
+    "AC-RL-C6": 0.22589531680440772,
+    "RL-C9-RL-C6": 0.8765625
+  },
+  "spearman_synthetic": {
+    "DFT-AC": {
+      "rho": 0.19999400614291235,
+      "pval": 1.720093809627824e-19
+    },
+    "DFT-RL-C9": {
+      "rho": 0.22739403993562063,
+      "pval": 7.178537289076273e-25
+    },
+    "DFT-RL-C6": {
+      "rho": 0.251574580264769,
+      "pval": 3.029862845525073e-30
+    },
+    "AC-RL-C9": {
+      "rho": 0.42514083938481523,
+      "pval": 1.342453170367778e-88
+    },
+    "AC-RL-C6": {
+      "rho": 0.37660134404282686,
+      "pval": 2.0648037622972017e-68
+    },
+    "RL-C9-RL-C6": {
+      "rho": 0.7676422927640757,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_synthetic": {
+    "DFT-AC": 0.033783783783783786,
+    "DFT-RL-C9": 0.03827751196172249,
+    "DFT-RL-C6": 0.049689440993788817,
+    "AC-RL-C9": 0.11455847255369929,
+    "AC-RL-C6": 0.10882956878850103,
+    "RL-C9-RL-C6": 0.4660714285714286
+  }
+}

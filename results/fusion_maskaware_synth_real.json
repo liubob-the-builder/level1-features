@@ -1,0 +1,264 @@
+{
+  "metadata": {
+    "datasets": {
+      "synthetic": {
+        "gallery": "sic-gen/sicgen_gallery_2000subjects",
+        "n_subjects": 2000
+      },
+      "real": {
+        "data_source": "casia-extraction/casia-codes-2d",
+        "casia_manifest": "casia-extraction/manifest.json",
+        "n_gallery": 300,
+        "n_probe": 2441,
+        "subject_selection_rule": "first 150 subjects, sorted numerically by subject ID"
+      }
+    },
+    "features": [
+      "DFT",
+      "AC",
+      "RL-C9"
+    ],
+    "mask_aware": true,
+    "mask_aware_note": "DFT and RL-C9 use their optional mask parameter (dft_spectrum.py / rl_features.py); AC unchanged, was already mask-aware. Same mask-aware extraction code as myfeatures_synthetic_maskaware.json / myfeatures_realcasia_maskaware.json.",
+    "rrf_k": 60,
+    "fusion_combos": {
+      "DFT+AC": [
+        "DFT",
+        "AC"
+      ],
+      "DFT+RL-C9": [
+        "DFT",
+        "RL-C9"
+      ],
+      "AC+RL-C9": [
+        "AC",
+        "RL-C9"
+      ],
+      "DFT+AC+RL-C9": [
+        "DFT",
+        "AC",
+        "RL-C9"
+      ]
+    },
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "failure_rank_threshold": 50,
+    "git_commit": "09634baf0dcea74cdf959a0862c8447f42ec964f",
+    "date": "2026-08-13",
+    "method_note": "RRF: fused score(candidate) = sum over included features of 1/(k+rank), rank = 1-indexed dense rank (double-argsort tie-break) per feature's SSD matrix (ssd_matrix imported unmodified from stage2_evaluate.py). Synthetic is bijective (true rank read off the diagonal, as in stage3_fusion.py); real CASIA is non-bijective (true rank looked up by identity via the manifest, as in eval_myfeatures_realcasia_maskaware.py). Does not overwrite stage3_fusion.py's outputs or either dataset's existing mask-aware single-feature results files."
+  },
+  "results_synthetic": {
+    "DFT": {
+      "dim": 21,
+      "median_rank": 1.0,
+      "mean_rank": 2.3575,
+      "recall@10": 0.967,
+      "recall@20": 0.982,
+      "recall@50": 0.9965,
+      "recall@100": 0.999,
+      "recall@150": 0.9995,
+      "recall@300": 1.0
+    },
+    "AC": {
+      "dim": 160,
+      "median_rank": 1.0,
+      "mean_rank": 11.768,
+      "recall@10": 0.885,
+      "recall@20": 0.9195,
+      "recall@50": 0.9535,
+      "recall@100": 0.975,
+      "recall@150": 0.9825,
+      "recall@300": 0.9925
+    },
+    "RL-C9": {
+      "dim": 576,
+      "median_rank": 3.0,
+      "mean_rank": 44.6395,
+      "recall@10": 0.658,
+      "recall@20": 0.731,
+      "recall@50": 0.834,
+      "recall@100": 0.8905,
+      "recall@150": 0.9235,
+      "recall@300": 0.959
+    },
+    "DFT+AC": {
+      "dim": 181,
+      "median_rank": 1.0,
+      "mean_rank": 1.3435,
+      "recall@10": 0.9945,
+      "recall@20": 0.9965,
+      "recall@50": 0.999,
+      "recall@100": 0.9995,
+      "recall@150": 1.0,
+      "recall@300": 1.0
+    },
+    "DFT+RL-C9": {
+      "dim": 597,
+      "median_rank": 1.0,
+      "mean_rank": 1.949,
+      "recall@10": 0.9815,
+      "recall@20": 0.9925,
+      "recall@50": 0.9965,
+      "recall@100": 0.9995,
+      "recall@150": 1.0,
+      "recall@300": 1.0
+    },
+    "AC+RL-C9": {
+      "dim": 736,
+      "median_rank": 1.0,
+      "mean_rank": 7.186,
+      "recall@10": 0.895,
+      "recall@20": 0.9385,
+      "recall@50": 0.9715,
+      "recall@100": 0.9865,
+      "recall@150": 0.991,
+      "recall@300": 0.9985
+    },
+    "DFT+AC+RL-C9": {
+      "dim": 757,
+      "median_rank": 1.0,
+      "mean_rank": 1.2865,
+      "recall@10": 0.992,
+      "recall@20": 0.9985,
+      "recall@50": 1.0,
+      "recall@100": 1.0,
+      "recall@150": 1.0,
+      "recall@300": 1.0
+    }
+  },
+  "results_real": {
+    "DFT": {
+      "dim": 21,
+      "median_rank": 6.0,
+      "mean_rank": 30.438344940598114,
+      "recall@10": 0.5829578041786153,
+      "recall@20": 0.6841458418680868,
+      "recall@50": 0.8140106513723884,
+      "recall@100": 0.9008603031544449,
+      "recall@150": 0.9459238017206063,
+      "recall@300": 1.0
+    },
+    "AC": {
+      "dim": 160,
+      "median_rank": 14.0,
+      "mean_rank": 48.88160589922163,
+      "recall@10": 0.46251536255632936,
+      "recall@20": 0.5542810323637853,
+      "recall@50": 0.7017615731257681,
+      "recall@100": 0.8160589922163048,
+      "recall@150": 0.8902089307660794,
+      "recall@300": 1.0
+    },
+    "RL-C9": {
+      "dim": 576,
+      "median_rank": 7.0,
+      "mean_rank": 32.589512494879145,
+      "recall@10": 0.5571487095452683,
+      "recall@20": 0.662843097091356,
+      "recall@50": 0.7918885702580909,
+      "recall@100": 0.8816058992216305,
+      "recall@150": 0.9446947972142564,
+      "recall@300": 1.0
+    },
+    "DFT+AC": {
+      "dim": 181,
+      "median_rank": 3.0,
+      "mean_rank": 23.349856616140926,
+      "recall@10": 0.665710774272839,
+      "recall@20": 0.7591151167554281,
+      "recall@50": 0.8668578451454322,
+      "recall@100": 0.9274887341253585,
+      "recall@150": 0.9573945104465383,
+      "recall@300": 1.0
+    },
+    "DFT+RL-C9": {
+      "dim": 597,
+      "median_rank": 2.0,
+      "mean_rank": 17.342482589102826,
+      "recall@10": 0.7312576812781647,
+      "recall@20": 0.8197460057353544,
+      "recall@50": 0.8971732896353953,
+      "recall@100": 0.9467431380581729,
+      "recall@150": 0.9782875870544858,
+      "recall@300": 1.0
+    },
+    "AC+RL-C9": {
+      "dim": 736,
+      "median_rank": 5.0,
+      "mean_rank": 23.0024580090127,
+      "recall@10": 0.6206472757066775,
+      "recall@20": 0.7386317083162638,
+      "recall@50": 0.8586644817697665,
+      "recall@100": 0.934043424825891,
+      "recall@150": 0.9700942236788201,
+      "recall@300": 1.0
+    },
+    "DFT+AC+RL-C9": {
+      "dim": 757,
+      "median_rank": 2.0,
+      "mean_rank": 14.2867677181483,
+      "recall@10": 0.7681278164686604,
+      "recall@20": 0.8390004096681688,
+      "recall@50": 0.9250307251126587,
+      "recall@100": 0.9631298648095044,
+      "recall@150": 0.977058582548136,
+      "recall@300": 1.0
+    }
+  },
+  "r50_fusion_gain_synthetic": {
+    "DFT+AC": 0.0024999999999999467,
+    "DFT+RL-C9": 0.0,
+    "AC+RL-C9": 0.018000000000000016,
+    "DFT+AC+RL-C9": 0.0034999999999999476
+  },
+  "r50_fusion_gain_real": {
+    "DFT+AC": 0.05284719377304381,
+    "DFT+RL-C9": 0.08316263826300696,
+    "AC+RL-C9": 0.06677591151167561,
+    "DFT+AC+RL-C9": 0.11102007374027034
+  },
+  "spearman_synthetic_maskaware": {
+    "DFT-AC": {
+      "rho": 0.22461758523734787,
+      "pval": 2.723150147057769e-24
+    },
+    "DFT-RL-C9": {
+      "rho": 0.230050576927648,
+      "pval": 1.9712591260707914e-25
+    },
+    "AC-RL-C9": {
+      "rho": 0.42927842040518194,
+      "pval": 1.7680010276382304e-90
+    }
+  },
+  "jaccard_failure_overlap_synthetic_maskaware": {
+    "DFT-AC": 0.010101010101010102,
+    "DFT-RL-C9": 0.008928571428571428,
+    "AC-RL-C9": 0.10966057441253264
+  },
+  "spearman_real_maskaware": {
+    "DFT-AC": {
+      "rho": 0.3240409771210743,
+      "pval": 8.76730154462708e-61
+    },
+    "DFT-RL-C9": {
+      "rho": 0.27637312304389877,
+      "pval": 4.814781734138635e-44
+    },
+    "AC-RL-C9": {
+      "rho": 0.28213894249380145,
+      "pval": 6.666501354719678e-46
+    }
+  },
+  "jaccard_failure_overlap_real_maskaware": {
+    "DFT-AC": 0.22233712512926576,
+    "DFT-RL-C9": 0.21158690176322417,
+    "AC-RL-C9": 0.2
+  }
+}

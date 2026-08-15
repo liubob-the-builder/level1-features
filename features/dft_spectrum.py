@@ -44,10 +44,15 @@ def row_magnitude_spectrum(row: np.ndarray) -> np.ndarray:
     return np.abs(X)
 
 
+MIN_VALID_FRAC = 0.5  # mask-aware mode: rows below this valid fraction are dropped from the average
+
+
 def code_magnitude_spectrum(
     template: np.ndarray,
     row_agg: Literal["average", "concat"] = "average",
     n_low_bins: int = 32,
+    mask: np.ndarray = None,
+    min_valid_frac: float = MIN_VALID_FRAC,
 ) -> np.ndarray:
     """Aggregate per-row magnitude spectra into one spectrum (or vector) per code.
 
@@ -58,12 +63,54 @@ def code_magnitude_spectrum(
                                 bins (bins 1..n_low_bins, DC excluded per row),
                                 shape (n_rows * n_low_bins,).
         n_low_bins: number of low-frequency bins kept per row in 'concat' mode.
+        mask: Optional binary array of same shape as template (1 = valid,
+              0 = occluded). Default None reproduces the exact mask-blind
+              behavior used for all existing synthetic (SIC-Gen) results:
+              every row is FFT'd as-is, occluded bits included.
+              If given, a pragmatic two-part scheme is used since an FFT
+              cannot simply skip missing samples:
+                (a) a row is dropped from the aggregate entirely if its
+                    valid fraction is below `min_valid_frac` (default 0.5,
+                    i.e. majority-occluded rows are excluded rather than
+                    let a mean-filled row dominated by filler values distort
+                    the spectrum);
+                (b) for rows that are kept, occluded bits are replaced with
+                    the mean of that row's own valid bits before the FFT
+                    (mean-fill), so the DC term is undisturbed and no sharp
+                    edges are introduced at occlusion boundaries.
+              NOTE: in 'concat' mode, dropping rows changes the output
+              dimension per code, which breaks fixed-length SSD comparison
+              across codes -- 'concat' + mask is therefore not supported
+              (raises ValueError). Use 'average' with a mask.
+        min_valid_frac: valid-fraction threshold below which a row is
+              dropped (mask-aware mode only). Ignored if mask is None.
 
     Returns:
         Float64 array; shape depends on row_agg (see above).
     """
     n_rows = template.shape[0]
-    per_row = np.stack([row_magnitude_spectrum(template[r]) for r in range(n_rows)])  # (n_rows, N_FREQS)
+
+    if mask is None:
+        per_row = np.stack([row_magnitude_spectrum(template[r]) for r in range(n_rows)])  # (n_rows, N_FREQS)
+    else:
+        if row_agg == "concat":
+            raise ValueError("mask-aware mode is not supported with row_agg='concat' "
+                              "(row-dropping would produce a variable-length vector)")
+        kept_spectra = []
+        for r in range(n_rows):
+            valid = mask[r].astype(bool)
+            valid_frac = valid.mean() if len(valid) else 0.0
+            if valid_frac < min_valid_frac:
+                continue
+            row = template[r].astype(np.float64).copy()
+            if valid_frac < 1.0:
+                row[~valid] = row[valid].mean()
+            kept_spectra.append(row_magnitude_spectrum(row))
+        if not kept_spectra:
+            # Degenerate case: every row failed the threshold. Fall back to
+            # all rows, mean-filled where possible, so a spectrum is still returned.
+            kept_spectra = [row_magnitude_spectrum(template[r]) for r in range(n_rows)]
+        per_row = np.stack(kept_spectra)  # (n_kept_rows, N_FREQS)
 
     if row_agg == "average":
         return per_row.mean(axis=0)  # (N_FREQS,)
