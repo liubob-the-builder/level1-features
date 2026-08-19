@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "data_source_real": "casia-extraction/casia-codes-2d/ (real CASIA-Iris-Thousand via Open Iris)",
+    "casia_manifest": "casia-extraction/manifest.json",
+    "subject_selection_rule": "first 1000 subjects, sorted numerically by subject ID",
+    "real_identity_count_total": 2000,
+    "real_gallery_size": 1998,
+    "expected_gallery_size": 1998,
+    "real_probe_count": 16457,
+    "excluded_identities": [
+      "524_L",
+      "668_L"
+    ],
+    "exclusion_reason": "gallery image (index 00) failed segmentation (gallery_ok=False in manifest.json); the identity and all its probes are excluded, not just the gallery slot, since a probe with no gallery to match against cannot yield a genuine comparison.",
+    "mask_convention": "mask-blind (mask=None default path for DFT and RL-C9/RL-C6)",
+    "mask_handling": {
+      "DFT": "mask-blind -- code_magnitude_spectrum(template, mask=None) (default). Every row is FFT'd as-is, occluded bits included, exactly as for all synthetic (SIC-Gen) results.",
+      "RL-C9": "mask-blind -- extract_rl_vector(template, C=9, mask=None) (default). Run-lengths computed over the raw bit sequence with no occlusion handling.",
+      "RL-C6": "mask-blind -- same extract_rl_vector(..., mask=None) path as RL-C9, just C=6."
+    },
+    "ac_note": "AC not re-run: extract_ac_vector is inherently mask-aware by construction (row_autocorrelation only counts bit-pairs where both positions are valid), so it has no meaningfully different mask-blind variant. Its number is identical to the one already reported in myfeatures_realcasia_full2000.json.",
+    "git_commit": "75417e5dad6615e8c8d0dca59cd2ff84a5f5aa1c",
+    "date": "2026-08-16",
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "method_note": "Same feature extraction (mask=None), SSD ranking (ssd_matrix/eer/d_prime imported unmodified from stage2_evaluate.py) and gallery/probe handling as eval_myfeatures_realcasia_full2000.py, for direct blind-vs-aware comparison against that file's results_real_full2000.",
+    "maskaware_counterpart": "level1-features/results/myfeatures_realcasia_full2000.json"
+  },
+  "results_real_full2000_maskblind": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 106.0,
+      "mean_rank": 298.1869113447165,
+      "eer": 0.24768691288132294,
+      "d_prime": 1.2904303186483026,
+      "recall@10": 0.23685969496262987,
+      "recall@20": 0.2990216928966397,
+      "recall@50": 0.3980676915598226,
+      "recall@100": 0.49219177249802515,
+      "recall@150": 0.5544145348483928,
+      "recall@300": 0.6799538190435681
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 49.0,
+      "mean_rank": 244.08245731299752,
+      "eer": 0.22966445171189975,
+      "d_prime": 1.1488245714266985,
+      "recall@10": 0.33481193413137267,
+      "recall@20": 0.3957586437382269,
+      "recall@50": 0.5035547183569302,
+      "recall@100": 0.5971926839642705,
+      "recall@150": 0.6565595187458224,
+      "recall@300": 0.759008324725041
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 53.0,
+      "mean_rank": 249.13009661542202,
+      "eer": 0.23213347395462763,
+      "d_prime": 1.1453003904555357,
+      "recall@10": 0.31931700796013857,
+      "recall@20": 0.3861578659536975,
+      "recall@50": 0.4930424743270341,
+      "recall@100": 0.5878349638451723,
+      "recall@150": 0.6474448562921553,
+      "recall@300": 0.7511089505985294
+    }
+  }
+}

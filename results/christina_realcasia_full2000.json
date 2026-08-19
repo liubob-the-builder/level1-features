@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "data_source": "casia-extraction/casia-codes-christina/ (real CASIA-Iris-Thousand via Open Iris, full 1000-subject/2000-identity extraction)",
+    "casia_manifest": "casia-extraction/manifest.json",
+    "identity_count_total": 2000,
+    "identity_count_usable": 1998,
+    "excluded_identities": [
+      "524_L",
+      "668_L"
+    ],
+    "excluded_reason": "failed to produce a usable gallery image (image 00) during extraction",
+    "subject_selection_rule": "first 1000 subjects, sorted numerically by subject ID",
+    "n_probes_expected_from_manifest": 16457,
+    "seeds_used": null,
+    "git_commit": "75417e5dad6615e8c8d0dca59cd2ff84a5f5aa1c",
+    "date": "2026-08-16",
+    "config_weights": {
+      "weight_hist_scale0": 0.5,
+      "weight_hist_scale1": 0.2,
+      "weight_row": 0.2,
+      "weight_spatial": 0.1
+    },
+    "code_shape": "(32, 512) int32, fed to compute_template_features with NO reshaping (n_scales=32 pseudo-scales)",
+    "min_segment_len": 8,
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "source": "christina-fhe-fis/filter_fhe_iris_complete.py (compute_template_features, compute_l1_distance_plaintext) + christina-fhe-fis/evaluation.py (compute_recall_at_k), imported read-only",
+    "comparable_to": [
+      "level1-features/results/myfeatures_realcasia_full2000.json",
+      "level1-features/results/fusion_realcasia_full2000.json"
+    ]
+  },
+  "conventions": {
+    "raw": "mask fed as-is (1=valid) to compute_enhanced_run_stats -- the faithful, unmodified reproduction of her real pipeline (extract_iris_code performs no inversion)",
+    "inverted": "occluded_mask = 1 - native_mask fed instead, matching non_mask_adjacent_valid's True=occluded expectation"
+  },
+  "results": {
+    "raw": {
+      "convention": "raw",
+      "n_galleries": 1998,
+      "n_probes": 16457,
+      "feature_dim": 576,
+      "recall_at_k": {
+        "10": 32.253752202710096,
+        "20": 38.02637175669928,
+        "50": 47.48739138360576,
+        "100": 56.377225496749105,
+        "150": 62.59342529015009,
+        "300": 74.72200279516315
+      },
+      "median_rank": 62.0,
+      "mean_rank": 231.84699519961111,
+      "total_queries": 16457,
+      "pct_rows_dropped": 20.568104849634246,
+      "rows_dropped": 121467,
+      "rows_total": 590560
+    },
+    "inverted": {
+      "convention": "inverted",
+      "n_galleries": 1998,
+      "n_probes": 16457,
+      "feature_dim": 576,
+      "recall_at_k": {
+        "10": 47.426626967247984,
+        "20": 55.11332563650726,
+        "50": 66.62210609467097,
+        "100": 75.2081181260254,
+        "150": 80.13611229264143,
+        "300": 87.85926961171539
+      },
+      "median_rank": 13.0,
+      "mean_rank": 122.89390532903931,
+      "total_queries": 16457,
+      "pct_rows_dropped": 0.012699810349498781,
+      "rows_dropped": 75,
+      "rows_total": 590560
+    }
+  },
+  "paper_comparison": {
+    "paper_recall_at_50_pct": 38.3,
+    "paper_source": "Karakosta & Knottenbelt, 'Iris Through the Looking Glass', RL feature, real CASIA",
+    "raw": {
+      "recall_at_50_pct": 47.48739138360576,
+      "delta_vs_paper_pct_points": 9.187391383605764
+    },
+    "inverted": {
+      "recall_at_50_pct": 66.62210609467097,
+      "delta_vs_paper_pct_points": 28.32210609467097
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "metadata": {
+    "data_source_real": "casia-extraction/casia-codes-2d/ (real CASIA-Iris-Thousand via Open Iris)",
+    "data_source_synthetic": "level1-features/results/myfeatures_synthetic_maskaware.json (DFT/RL-C9/RL-C6, mask-aware) + stage2_results.json/stage2_ranks.npz (AC, and recall@20/150 backfill for all four)",
+    "casia_manifest": "casia-extraction/manifest.json",
+    "subject_selection_rule": "first 1000 subjects, sorted numerically by subject ID",
+    "real_identity_count_total": 2000,
+    "real_gallery_size": 1998,
+    "expected_gallery_size": 1998,
+    "real_probe_count": 16457,
+    "excluded_identities": [
+      "524_L",
+      "668_L"
+    ],
+    "exclusion_reason": "gallery image (index 00) failed segmentation (gallery_ok=False in manifest.json); the identity and all its probes are excluded, not just the gallery slot, since a probe with no gallery to match against cannot yield a genuine comparison.",
+    "synthetic_gallery_size": 2000,
+    "mask_handling": {
+      "DFT": "mask-aware -- code_magnitude_spectrum(template, mask=mask). Per row: if valid fraction < 0.5 the row is dropped from the across-row average; kept rows have occluded bits mean-filled with that row's own valid-bit mean before the FFT. Bins 30-50 kept.",
+      "AC": "mask-aware -- extract_ac_vector (already mask-aware: row_autocorrelation only counts bit-pairs where both positions are valid).",
+      "RL-C9": "mask-aware -- extract_rl_vector(template, C=9, mask=mask). Run-lengths computed only within maximal contiguous runs of valid bits; an occluded bit terminates the run it interrupts and is not itself counted.",
+      "RL-C6": "mask-aware -- same extract_rl_vector(..., mask=mask) path as RL-C9, just C=6."
+    },
+    "dft_min_valid_frac_threshold": 0.5,
+    "git_commit": "75417e5dad6615e8c8d0dca59cd2ff84a5f5aa1c",
+    "date": "2026-08-15",
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "failure_rank_threshold": 50,
+    "ranking_reversal_check": "By R@50: synthetic order = ['DFT', 'AC', 'RL-C9', 'RL-C6']; real-full2000 order = ['RL-C6', 'RL-C9', 'DFT', 'AC']. Earlier real-300 order was reported as RL~=DFT>AC; synthetic order was DFT~=AC>>RL.",
+    "method_note": "Same feature extraction, SSD ranking (ssd_matrix/eer/d_prime imported unmodified from stage2_evaluate.py) and gallery/probe handling as eval_myfeatures_realcasia_maskaware.py, run over the full 1000-subject manifest instead of the first 150.",
+    "prior_run_for_comparison": "level1-features/results/myfeatures_realcasia_maskaware.json (N=300 galleries, first 150 subjects) -- not overwritten."
+  },
+  "results_real_full2000": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 31.0,
+      "mean_rank": 190.93279455550828,
+      "eer": 0.19900346357173238,
+      "d_prime": 1.274971829407481,
+      "recall@10": 0.3706629397824634,
+      "recall@20": 0.4499605031293674,
+      "recall@50": 0.5586072795770797,
+      "recall@100": 0.6537643555933645,
+      "recall@150": 0.7119159020477608,
+      "recall@300": 0.8053108099896701
+    },
+    "AC": {
+      "dim": 160,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 59.0,
+      "mean_rank": 298.47359786109257,
+      "eer": 0.30382208178890446,
+      "d_prime": 0.6279741999080997,
+      "recall@10": 0.3318344777298414,
+      "recall@20": 0.3898644953515221,
+      "recall@50": 0.4811934131372668,
+      "recall@100": 0.5660205383727289,
+      "recall@150": 0.6202223977638694,
+      "recall@300": 0.7178100504344656
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 31.0,
+      "mean_rank": 194.07923679893054,
+      "eer": 0.21448068073429338,
+      "d_prime": 1.2983136910736814,
+      "recall@10": 0.37892690040712157,
+      "recall@20": 0.4524518442000365,
+      "recall@50": 0.5598833323205931,
+      "recall@100": 0.65224524518442,
+      "recall@150": 0.7083308014826517,
+      "recall@300": 0.8020902959227076
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 1998,
+      "n_probe": 16457,
+      "median_rank": 31.0,
+      "mean_rank": 188.26104393267303,
+      "eer": 0.205862357369073,
+      "d_prime": 1.320686193211988,
+      "recall@10": 0.375767150756517,
+      "recall@20": 0.45214802211824756,
+      "recall@50": 0.5609770918150331,
+      "recall@100": 0.655283466002309,
+      "recall@150": 0.713799598954852,
+      "recall@300": 0.8059184541532478
+    }
+  },
+  "results_synthetic_2000": {
+    "DFT": {
+      "dim": 21,
+      "median_rank": 1.0,
+      "mean_rank": 2.3575,
+      "eer": 0.013433966983491724,
+      "d_prime": 1.6932467261730149,
+      "recall@10": 0.895,
+      "recall@50": 0.97,
+      "recall@100": 0.9865,
+      "recall@300": 0.999,
+      "recall@20": 0.9345,
+      "recall@150": 0.993
+    },
+    "AC": {
+      "dim": 160,
+      "recall@10": 0.885,
+      "recall@50": 0.9535,
+      "recall@100": 0.975,
+      "recall@300": 0.9925,
+      "median_rank": 1.0,
+      "mean_rank": 11.768,
+      "eer": 0.05746285642821411,
+      "d_prime": 2.171372709678716,
+      "recall@20": 0.9195,
+      "recall@150": 0.9825
+    },
+    "RL-C9": {
+      "dim": 576,
+      "median_rank": 3.0,
+      "mean_rank": 44.6395,
+      "eer": 0.10945872936468237,
+      "d_prime": 2.402604270585951,
+      "recall@10": 0.6325,
+      "recall@50": 0.813,
+      "recall@100": 0.88,
+      "recall@300": 0.9495,
+      "recall@20": 0.7115,
+      "recall@150": 0.906
+    },
+    "RL-C6": {
+      "dim": 384,
+      "median_rank": 6.0,
+      "mean_rank": 66.226,
+      "eer": 0.1208926963481741,
+      "d_prime": 2.2532937500116246,
+      "recall@10": 0.5745,
+      "recall@50": 0.7765,
+      "recall@100": 0.8525,
+      "recall@300": 0.9455,
+      "recall@20": 0.665,
+      "recall@150": 0.899
+    }
+  },
+  "spearman_real_full2000": {
+    "DFT-AC": {
+      "rho": 0.3806335956711668,
+      "pval": 0.0
+    },
+    "DFT-RL-C9": {
+      "rho": 0.32629944070413275,
+      "pval": 0.0
+    },
+    "DFT-RL-C6": {
+      "rho": 0.3378864382851341,
+      "pval": 0.0
+    },
+    "AC-RL-C9": {
+      "rho": 0.36902171481678914,
+      "pval": 0.0
+    },
+    "AC-RL-C6": {
+      "rho": 0.3749808129029515,
+      "pval": 0.0
+    },
+    "RL-C9-RL-C6": {
+      "rho": 0.9866765198450773,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_real_full2000": {
+    "DFT-AC": 0.4352406902815622,
+    "DFT-RL-C9": 0.3911584196394323,
+    "DFT-RL-C6": 0.39679938301359297,
+    "AC-RL-C9": 0.4371186595027775,
+    "AC-RL-C6": 0.4386237108697636,
+    "RL-C9-RL-C6": 0.9157838983050848
+  },
+  "failure_set_sizes_real_full2000": {
+    "DFT": 7264,
+    "AC": 8538,
+    "RL-C9": 7243,
+    "RL-C6": 7225
+  }
+}

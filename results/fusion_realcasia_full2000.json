@@ -1,0 +1,284 @@
+{
+  "metadata": {
+    "datasets": {
+      "synthetic": {
+        "gallery": "sic-gen/sicgen_gallery_2000subjects",
+        "n_subjects": 2000,
+        "source": "loaded as-is from fusion_maskaware_synth_real.json (already N=2000, not recomputed)"
+      },
+      "real": {
+        "data_source": "casia-extraction/casia-codes-2d",
+        "casia_manifest": "casia-extraction/manifest.json",
+        "n_gallery": 1998,
+        "expected_n_gallery": 1998,
+        "n_probe": 16457,
+        "subject_selection_rule": "first 1000 subjects, sorted numerically by subject ID",
+        "excluded_identities": [
+          "524_L",
+          "668_L"
+        ],
+        "exclusion_reason": "gallery image (index 00) failed segmentation (gallery_ok=False); identity and its probes excluded entirely."
+      }
+    },
+    "features": [
+      "DFT",
+      "AC",
+      "RL-C9"
+    ],
+    "mask_aware": true,
+    "rrf_k": 60,
+    "fusion_combos": {
+      "DFT+AC": [
+        "DFT",
+        "AC"
+      ],
+      "DFT+RL-C9": [
+        "DFT",
+        "RL-C9"
+      ],
+      "AC+RL-C9": [
+        "AC",
+        "RL-C9"
+      ],
+      "DFT+AC+RL-C9": [
+        "DFT",
+        "AC",
+        "RL-C9"
+      ]
+    },
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "failure_rank_threshold": 50,
+    "git_commit": "75417e5dad6615e8c8d0dca59cd2ff84a5f5aa1c",
+    "date": "2026-08-15",
+    "dft_rl_vs_dft_ac_note": "DFT+RL-C9 R@10=0.573 vs DFT+AC R@10=0.536 on real-full2000 -- DFT+RL-C9 still beats DFT+AC.",
+    "prior_run_for_comparison": "level1-features/results/fusion_maskaware_synth_real.json (real N=300 galleries, first 150 subjects) -- not overwritten.",
+    "method_note": "RRF: fused score(candidate) = sum over included features of 1/(k+rank), rank = 1-indexed dense rank (double-argsort tie-break) per feature's SSD matrix (ssd_matrix imported unmodified from stage2_evaluate.py). Real side recomputed at full 1000-subject scale via the same non-bijective, manifest-driven true-rank lookup as eval_fusion_maskaware.py's run_real(); synthetic side reused unchanged since it was already N=2000."
+  },
+  "results_synthetic": {
+    "DFT": {
+      "dim": 21,
+      "median_rank": 1.0,
+      "mean_rank": 2.3575,
+      "recall@10": 0.967,
+      "recall@20": 0.982,
+      "recall@50": 0.9965,
+      "recall@100": 0.999,
+      "recall@150": 0.9995,
+      "recall@300": 1.0
+    },
+    "AC": {
+      "dim": 160,
+      "median_rank": 1.0,
+      "mean_rank": 11.768,
+      "recall@10": 0.885,
+      "recall@20": 0.9195,
+      "recall@50": 0.9535,
+      "recall@100": 0.975,
+      "recall@150": 0.9825,
+      "recall@300": 0.9925
+    },
+    "RL-C9": {
+      "dim": 576,
+      "median_rank": 3.0,
+      "mean_rank": 44.6395,
+      "recall@10": 0.658,
+      "recall@20": 0.731,
+      "recall@50": 0.834,
+      "recall@100": 0.8905,
+      "recall@150": 0.9235,
+      "recall@300": 0.959
+    },
+    "DFT+AC": {
+      "dim": 181,
+      "median_rank": 1.0,
+      "mean_rank": 1.3435,
+      "recall@10": 0.9945,
+      "recall@20": 0.9965,
+      "recall@50": 0.999,
+      "recall@100": 0.9995,
+      "recall@150": 1.0,
+      "recall@300": 1.0
+    },
+    "DFT+RL-C9": {
+      "dim": 597,
+      "median_rank": 1.0,
+      "mean_rank": 1.949,
+      "recall@10": 0.9815,
+      "recall@20": 0.9925,
+      "recall@50": 0.9965,
+      "recall@100": 0.9995,
+      "recall@150": 1.0,
+      "recall@300": 1.0
+    },
+    "AC+RL-C9": {
+      "dim": 736,
+      "median_rank": 1.0,
+      "mean_rank": 7.186,
+      "recall@10": 0.895,
+      "recall@20": 0.9385,
+      "recall@50": 0.9715,
+      "recall@100": 0.9865,
+      "recall@150": 0.991,
+      "recall@300": 0.9985
+    },
+    "DFT+AC+RL-C9": {
+      "dim": 757,
+      "median_rank": 1.0,
+      "mean_rank": 1.2865,
+      "recall@10": 0.992,
+      "recall@20": 0.9985,
+      "recall@50": 1.0,
+      "recall@100": 1.0,
+      "recall@150": 1.0,
+      "recall@300": 1.0
+    }
+  },
+  "results_real": {
+    "DFT": {
+      "dim": 21,
+      "median_rank": 31.0,
+      "mean_rank": 190.93279455550828,
+      "recall@10": 0.3706629397824634,
+      "recall@20": 0.4499605031293674,
+      "recall@50": 0.5586072795770797,
+      "recall@100": 0.6537643555933645,
+      "recall@150": 0.7119159020477608,
+      "recall@300": 0.8053108099896701
+    },
+    "AC": {
+      "dim": 160,
+      "median_rank": 59.0,
+      "mean_rank": 298.47359786109257,
+      "recall@10": 0.3318344777298414,
+      "recall@20": 0.3898644953515221,
+      "recall@50": 0.4811934131372668,
+      "recall@100": 0.5660205383727289,
+      "recall@150": 0.6202223977638694,
+      "recall@300": 0.7178100504344656
+    },
+    "RL-C9": {
+      "dim": 576,
+      "median_rank": 31.0,
+      "mean_rank": 194.07923679893054,
+      "recall@10": 0.37892690040712157,
+      "recall@20": 0.4524518442000365,
+      "recall@50": 0.5598833323205931,
+      "recall@100": 0.65224524518442,
+      "recall@150": 0.7083308014826517,
+      "recall@300": 0.8020902959227076
+    },
+    "DFT+AC": {
+      "dim": 181,
+      "median_rank": 7.0,
+      "mean_rank": 141.4331895242146,
+      "recall@10": 0.5358206234429118,
+      "recall@20": 0.5906301269976302,
+      "recall@50": 0.6712645075044055,
+      "recall@100": 0.7428449899738713,
+      "recall@150": 0.7874460715804825,
+      "recall@300": 0.8598164914625995
+    },
+    "DFT+RL-C9": {
+      "dim": 597,
+      "median_rank": 6.0,
+      "mean_rank": 99.73749772133439,
+      "recall@10": 0.5726438597557271,
+      "recall@20": 0.6360211460168925,
+      "recall@50": 0.7204229203378502,
+      "recall@100": 0.7897551194020781,
+      "recall@150": 0.833323205930607,
+      "recall@300": 0.901561645500395
+    },
+    "AC+RL-C9": {
+      "dim": 736,
+      "median_rank": 12.0,
+      "mean_rank": 133.92507747463085,
+      "recall@10": 0.486966032691256,
+      "recall@20": 0.5666889469526645,
+      "recall@50": 0.6656741811994896,
+      "recall@100": 0.7380446010816066,
+      "recall@150": 0.7846509084280245,
+      "recall@300": 0.8650422312693686
+    },
+    "DFT+AC+RL-C9": {
+      "dim": 757,
+      "median_rank": 3.0,
+      "mean_rank": 82.44540317190254,
+      "recall@10": 0.6298839399647567,
+      "recall@20": 0.6959956249620223,
+      "recall@50": 0.7766300054687975,
+      "recall@100": 0.828887403536489,
+      "recall@150": 0.8628547122804886,
+      "recall@300": 0.9185756820805736
+    }
+  },
+  "r10_fusion_gain_synthetic": {
+    "DFT+AC": 0.02750000000000008,
+    "DFT+RL-C9": 0.014500000000000068,
+    "AC+RL-C9": 0.010000000000000009,
+    "DFT+AC+RL-C9": 0.025000000000000022
+  },
+  "r10_fusion_gain_real": {
+    "DFT+AC": 0.16515768366044842,
+    "DFT+RL-C9": 0.1937169593486055,
+    "AC+RL-C9": 0.10803913228413442,
+    "DFT+AC+RL-C9": 0.2509570395576351
+  },
+  "r50_fusion_gain_synthetic": {
+    "DFT+AC": 0.0024999999999999467,
+    "DFT+RL-C9": 0.0,
+    "AC+RL-C9": 0.018000000000000016,
+    "DFT+AC+RL-C9": 0.0034999999999999476
+  },
+  "r50_fusion_gain_real": {
+    "DFT+AC": 0.1126572279273258,
+    "DFT+RL-C9": 0.1605395880172571,
+    "AC+RL-C9": 0.10579084887889656,
+    "DFT+AC+RL-C9": 0.2167466731482044
+  },
+  "spearman_synthetic_maskaware": {
+    "DFT-AC": {
+      "rho": 0.22461758523734787,
+      "pval": 2.723150147057769e-24
+    },
+    "DFT-RL-C9": {
+      "rho": 0.230050576927648,
+      "pval": 1.9712591260707914e-25
+    },
+    "AC-RL-C9": {
+      "rho": 0.42927842040518194,
+      "pval": 1.7680010276382304e-90
+    }
+  },
+  "jaccard_failure_overlap_synthetic_maskaware": {
+    "DFT-AC": 0.010101010101010102,
+    "DFT-RL-C9": 0.008928571428571428,
+    "AC-RL-C9": 0.10966057441253264
+  },
+  "spearman_real_maskaware": {
+    "DFT-AC": {
+      "rho": 0.3806335956711668,
+      "pval": 0.0
+    },
+    "DFT-RL-C9": {
+      "rho": 0.32629944070413275,
+      "pval": 0.0
+    },
+    "AC-RL-C9": {
+      "rho": 0.36902171481678914,
+      "pval": 0.0
+    }
+  },
+  "jaccard_failure_overlap_real_maskaware": {
+    "DFT-AC": 0.4352406902815622,
+    "DFT-RL-C9": 0.3911584196394323,
+    "AC-RL-C9": 0.4371186595027775
+  }
+}
