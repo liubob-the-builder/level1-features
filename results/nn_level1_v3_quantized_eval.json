@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "gallery_path": "/home/liubobz/iris-recognition/casia-extraction/casia-codes-2d",
+    "checkpoint_path": "level1-features/results/nn_level1_v3_checkpoint_best.pt",
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "quant_range": 127,
+    "embedding_dim": 64,
+    "checkpoint_epoch": 18,
+    "git_commit": "75417e5dad6615e8c8d0dca59cd2ff84a5f5aa1c",
+    "date": "2026-08-19"
+  },
+  "float_metrics": {
+    "n_gallery": 1998,
+    "n_probes": 2493,
+    "recall_at_10": 0.744484556758925,
+    "recall_at_50": 0.8804653028479743,
+    "recall_at_100": 0.9286000802246289,
+    "recall_at_300": 0.9731247492980345,
+    "median_rank": 2.0,
+    "mean_rank": 35.128359406337744
+  },
+  "quantized_metrics": {
+    "n_gallery": 1998,
+    "n_probes": 2493,
+    "recall_at_10": 0.7436823104693141,
+    "recall_at_50": 0.8804653028479743,
+    "recall_at_100": 0.9286000802246289,
+    "recall_at_300": 0.9731247492980345,
+    "median_rank": 2.0,
+    "mean_rank": 35.163658243080626
+  },
+  "quantized_minus_float_delta": {
+    "recall_at_10": -0.0008022462896108973,
+    "recall_at_50": 0.0,
+    "recall_at_100": 0.0,
+    "recall_at_300": 0.0,
+    "median_rank": 0.0
+  }
+}
