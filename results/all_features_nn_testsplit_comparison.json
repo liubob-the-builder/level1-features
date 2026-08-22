@@ -1,0 +1,147 @@
+{
+  "metadata": {
+    "purpose": "All Level-1 features (hand-designed + Christina's + the learned NN) evaluated on the identical held-out split used for the NN's final test evaluation (nn_train.py --final-eval), for a fair apples-to-apples comparison.",
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "split_seed": 0,
+    "split_val_frac": 0.15,
+    "split_test_frac": 0.15,
+    "n_test_identities_probes": 299,
+    "n_gallery_identities": 1998,
+    "excluded_identities": [
+      "524_L",
+      "668_L"
+    ],
+    "exclusion_reason": "failed Open Iris segmentation for their gallery image; already excluded from nn_identity_split.json by nn_split.py.",
+    "hand_designed_data_source": "casia-extraction/casia-codes-2d",
+    "christina_data_source": "casia-extraction/casia-codes-christina",
+    "nn_source": "results/nn_level1_v3_train_history.json",
+    "nn_checkpoint": "level1-features/results/nn_level1_v3_checkpoint_best.pt",
+    "nn_hyperparameters": {
+      "embedding_dim": 64,
+      "quant_range": 127,
+      "margin": 1.0,
+      "lr": 0.001,
+      "batch_size": 128,
+      "steps_per_epoch": 200,
+      "epochs": 20,
+      "eval_every": 1
+    },
+    "mask_handling": {
+      "DFT": "mask-aware -- code_magnitude_spectrum(template, mask=mask). Per row: if valid fraction < 0.5 the row is dropped from the across-row average; kept rows have occluded bits mean-filled with that row's own valid-bit mean before the FFT. Bins 30-50 kept.",
+      "AC": "mask-aware -- extract_ac_vector (already mask-aware: row_autocorrelation only counts bit-pairs where both positions are valid).",
+      "RL-C9": "mask-aware -- extract_rl_vector(template, C=9, mask=mask). Run-lengths computed only within maximal contiguous runs of valid bits.",
+      "RL-C6": "mask-aware -- same extract_rl_vector(..., mask=mask) path as RL-C9, just C=6.",
+      "Christina-inverted": "occluded_mask = 1 - native_mask fed to compute_enhanced_run_stats (matches non_mask_adjacent_valid's True=occluded expectation) -- the fixed/corrected convention, her feature at its best.",
+      "Christina-raw": "native mask (1=valid) fed as-is -- her real pipeline's literal, unmodified behavior. Reported for reference only."
+    },
+    "dft_min_valid_frac_threshold": 0.5,
+    "christina_config_weights": {
+      "weight_hist_scale0": 0.5,
+      "weight_hist_scale1": 0.2,
+      "weight_row": 0.2,
+      "weight_spatial": 0.1
+    },
+    "distance_metrics": {
+      "DFT/AC/RL-C9/RL-C6/NN": "SSD (sum of squared differences)",
+      "Christina": "L1 (compute_l1_distance_plaintext)"
+    },
+    "primary_christina_convention": "inverted",
+    "k_values": [
+      10,
+      50,
+      100,
+      300
+    ],
+    "git_commit": "097fab47d5c661ffdcd36ca963aa84876f1f8f8c",
+    "date": "2026-08-19"
+  },
+  "results": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 26.0,
+      "mean_rank": 169.59406337745688,
+      "eer": 0.19009280065304535,
+      "d_prime": 1.3970172668843106,
+      "recall_at_10": 0.39791415964701166,
+      "recall_at_50": 0.5904532691536302,
+      "recall_at_100": 0.681909346169274,
+      "recall_at_300": 0.8275170477336542
+    },
+    "AC": {
+      "dim": 160,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 50.0,
+      "mean_rank": 258.70758122743683,
+      "eer": 0.2836268040247294,
+      "d_prime": 0.7109032206204164,
+      "recall_at_10": 0.3565984757320497,
+      "recall_at_50": 0.5010028078620137,
+      "recall_at_100": 0.587645407139992,
+      "recall_at_300": 0.7384677095868432
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 27.0,
+      "mean_rank": 195.13076614520656,
+      "eer": 0.21110215262725612,
+      "d_prime": 1.2662512715035203,
+      "recall_at_10": 0.4027276373846771,
+      "recall_at_50": 0.5732049739269955,
+      "recall_at_100": 0.6574408343361412,
+      "recall_at_300": 0.8022462896109106
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 26.0,
+      "mean_rank": 190.68592057761734,
+      "eer": 0.2029822712407962,
+      "d_prime": 1.294896160847794,
+      "recall_at_10": 0.4011231448054553,
+      "recall_at_50": 0.5716004813477737,
+      "recall_at_100": 0.6618531889290012,
+      "recall_at_300": 0.8054552747693542
+    },
+    "Christina (inverted)": {
+      "convention": "inverted",
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 12.0,
+      "mean_rank": 121.15683914961893,
+      "recall_at_10": 0.48495788206979545,
+      "recall_at_50": 0.6803048535900521,
+      "recall_at_100": 0.7641395908543923,
+      "recall_at_300": 0.8832731648616126
+    },
+    "Christina (raw)": {
+      "convention": "raw",
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 50.0,
+      "mean_rank": 218.544324107501,
+      "recall_at_10": 0.3557962294424388,
+      "recall_at_50": 0.50220617729643,
+      "recall_at_100": 0.583233052547132,
+      "recall_at_300": 0.7637384677095869
+    },
+    "NN (v3, learned)": {
+      "dim": 64,
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "median_rank": 2.0,
+      "mean_rank": 35.128359406337744,
+      "recall_at_10": 0.744484556758925,
+      "recall_at_50": 0.8804653028479743,
+      "recall_at_100": 0.9286000802246289,
+      "recall_at_300": 0.9731247492980345
+    }
+  }
+}

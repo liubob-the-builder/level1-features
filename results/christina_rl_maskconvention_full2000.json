@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "gallery_path": "sic-gen/sicgen_gallery_2000subjects",
+    "subject_count": 2000,
+    "gallery_generation_seed": 20002,
+    "gallery_num_processes": 16,
+    "gallery_generator_git_commit": "7b7edd759d13de1ca3ca95a983868c2ea5e6f07b",
+    "gallery_metadata_source": "sic-gen/sicgen_gallery_2000subjects/metadata.json",
+    "seeds_used": null,
+    "git_commit": "097fab47d5c661ffdcd36ca963aa84876f1f8f8c",
+    "date": "2026-08-19",
+    "config_weights": {
+      "weight_hist_scale0": 0.5,
+      "weight_hist_scale1": 0.2,
+      "weight_row": 0.2,
+      "weight_spatial": 0.1
+    },
+    "code_shape": "(1, 32, 512) single-scale",
+    "min_segment_len": 8,
+    "k_values": [
+      10,
+      20,
+      50,
+      100,
+      150,
+      300
+    ],
+    "source": "christina-fhe-fis/filter_fhe_iris_complete.py (compute_enhanced_run_stats, compute_l1_distance_plaintext) + christina-fhe-fis/evaluation.py (compute_recall_at_k), imported read-only",
+    "sampling_note": "Full 2000-subject gallery used, no sub-sampling. This makes the result reproducible from its own file.",
+    "comparable_to": "level1-features/results/christina_rl_maskconvention_300.json (same script logic, 300-subject gallery)"
+  },
+  "conventions": {
+    "inverted": "occluded_mask = 1 - sicgen_mask fed to compute_enhanced_run_stats (matches non_mask_adjacent_valid's True=occluded expectation)",
+    "raw": "sicgen_mask (1=valid) fed as-is to compute_enhanced_run_stats"
+  },
+  "results": {
+    "inverted": {
+      "convention": "inverted",
+      "n_subjects": 2000,
+      "feature_dim": 80,
+      "recall_at_k": {
+        "10": 54.449999999999996,
+        "20": 63.0,
+        "50": 73.45,
+        "100": 81.45,
+        "150": 86.0,
+        "300": 92.55
+      },
+      "median_rank": 7.0,
+      "mean_rank": 78.1025,
+      "total_queries": 2000,
+      "pct_rows_dropped": 0.0,
+      "rows_dropped": 0,
+      "rows_total": 128000
+    },
+    "raw": {
+      "convention": "raw",
+      "n_subjects": 2000,
+      "feature_dim": 80,
+      "recall_at_k": {
+        "10": 1.0999999999999999,
+        "20": 2.0500000000000003,
+        "50": 5.45,
+        "100": 10.6,
+        "150": 15.4,
+        "300": 27.85
+      },
+      "median_rank": 768.0,
+      "mean_rank": 815.7165,
+      "total_queries": 2000,
+      "pct_rows_dropped": 60.753125,
+      "rows_dropped": 77764,
+      "rows_total": 128000
+    }
+  }
+}
