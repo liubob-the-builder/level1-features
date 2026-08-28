@@ -1,0 +1,292 @@
+{
+  "metadata": {
+    "audit_date": "2026-08-22",
+    "git_commit": "a9eb179ecea57697e32a4fe26cf5c0e81279f114",
+    "checkpoint_audited": "/home/liubobz/iris-recognition/level1-features/results/nn_level1_v3_checkpoint_best.pt",
+    "checkpoint_epoch": 18,
+    "split_path": "/home/liubobz/iris-recognition/level1-features/results/nn_identity_split.json",
+    "casia_dir": "/home/liubobz/iris-recognition/casia-extraction/casia-codes-2d",
+    "audit_rng_seed": 1234,
+    "read_only": true,
+    "note": "This script never writes to any checkpoint, split, or existing result file. The shuffle-label retraining check (check 5) lives in a separate script (audit_shuffle_test.py) that trains only a throwaway model into a scratch location."
+  },
+  "check_1_identity_disjointness": {
+    "n_train": 1399,
+    "n_val": 300,
+    "n_test": 299,
+    "counts_match_expected_1399_300_299": true,
+    "identity_overlap_train_val": [],
+    "identity_overlap_train_test": [],
+    "identity_overlap_val_test": [],
+    "subject_overlap_train_val": [],
+    "subject_overlap_train_test": [],
+    "subject_overlap_val_test": [],
+    "simulated_train_batches_touched_n_identities": 20,
+    "simulated_train_batches_touched_any_test_identity": [],
+    "pass": true
+  },
+  "check_2_gallery_probe_construction": {
+    "n_gallery_expected": 1998,
+    "n_gallery_actual": 1998,
+    "gallery_count_matches": true,
+    "missing_gallery_files_in_full_pool": [],
+    "test_identities_missing_own_gallery_entry": [],
+    "n_probe_records_test_only": 2493,
+    "self_duplicate_probe_files_bytewise": [
+      [
+        "029_L",
+        "3"
+      ],
+      [
+        "230_R",
+        "5"
+      ],
+      [
+        "236_R",
+        "2"
+      ],
+      [
+        "543_L",
+        "2"
+      ],
+      [
+        "703_L",
+        "7"
+      ]
+    ],
+    "pass": false,
+    "duplicate_image_investigation": {
+      "finding": "5 of 2493 test probes are byte-identical (template AND mask) to their own identity's gallery (stem-1) file: [('029_L','3'), ('230_R','5'), ('236_R','2'), ('543_L','2'), ('703_L','7')].",
+      "root_cause": "Traced to the RAW CASIA-Iris-Thousand source JPEGs themselves, not this project's split or eval code: e.g. for 029_L, S5029L00.jpg (stem 1) and S5029L02.jpg (stem 3) are byte-identical (same SHA-256, same file size) in the original dataset distribution -- a known data-collection artifact in CASIA-Iris-Thousand, not a bug introduced here.",
+      "prevalence": "27 of 1998 identities (1.35%) have this artifact somewhere in their 10-image set; only 5 of 299 test identities (1.67%) are affected, i.e. 5 of 2493 test probes (0.20%).",
+      "quantified_impact_on_headline_numbers": {
+        "all_5_duplicate_probes_rank": 1,
+        "with_duplicates_included_R@10": 0.7436823104693141,
+        "excluding_the_5_duplicate_probes_R@10": 0.7431672025723473,
+        "absolute_change": 0.0005151078969668,
+        "R@50_R@100_R@300_median_mean_change": "negligible (<0.0002 absolute at every K, median unchanged, mean rank +0.07)"
+      },
+      "verdict": "Genuine dataset artifact (inherited, not a pipeline bug), gives 5 trivially-correct probes a free rank-1 hit with zero real recognition happening. Effect on the headline R@10 is ~0.0005 absolute (0.74368 -> 0.74317) -- well within noise and does not change any reported figure at 3 significant digits. Worth disclosing in the thesis as a known CASIA-Iris-Thousand limitation, but it does not materially inflate the result."
+    },
+    "pass_with_caveat": "Structural construction (gallery=1998, probes=test-only, no code-level query-in-gallery bug) PASSES. The strict bytewise self-duplicate check technically FAILS (5 hits), but the root cause is an inherited dataset artifact with a quantified, negligible (~0.0005 R@10) impact -- see duplicate_image_investigation."
+  },
+  "check_3_quantization_consistency": {
+    "headline_number_source": "R@10 0.744 as reported matches the FLOAT (pre-quantization) final_test_metrics (0.7445) to 3dp; the quantized number is 0.7437, also 0.744 to 3dp -- both round the same way, but they are two distinct numbers computed on two distinct representations. Reporting BOTH explicitly below to remove any ambiguity.",
+    "float_metrics_recomputed": {
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "recall_at_10": 0.744484556758925,
+      "recall_at_50": 0.8804653028479743,
+      "recall_at_100": 0.9286000802246289,
+      "recall_at_300": 0.9731247492980345,
+      "median_rank": 2.0,
+      "mean_rank": 35.128359406337744
+    },
+    "quantized_metrics_recomputed": {
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "recall_at_10": 0.7436823104693141,
+      "recall_at_50": 0.8804653028479743,
+      "recall_at_100": 0.9286000802246289,
+      "recall_at_300": 0.9731247492980345,
+      "median_rank": 2.0,
+      "mean_rank": 35.163658243080626
+    },
+    "stored_final_test_metrics_train_history": {
+      "n_gallery": 1998,
+      "n_probes": 2493,
+      "recall_at_10": 0.744484556758925,
+      "recall_at_50": 0.8804653028479743,
+      "recall_at_100": 0.9286000802246289,
+      "recall_at_300": 0.9731247492980345,
+      "median_rank": 2.0,
+      "mean_rank": 35.128359406337744,
+      "gallery_identity_count": 1998
+    },
+    "stored_quantized_eval_json": {
+      "float": {
+        "n_gallery": 1998,
+        "n_probes": 2493,
+        "recall_at_10": 0.744484556758925,
+        "recall_at_50": 0.8804653028479743,
+        "recall_at_100": 0.9286000802246289,
+        "recall_at_300": 0.9731247492980345,
+        "median_rank": 2.0,
+        "mean_rank": 35.128359406337744
+      },
+      "quantized": {
+        "n_gallery": 1998,
+        "n_probes": 2493,
+        "recall_at_10": 0.7436823104693141,
+        "recall_at_50": 0.8804653028479743,
+        "recall_at_100": 0.9286000802246289,
+        "recall_at_300": 0.9731247492980345,
+        "median_rank": 2.0,
+        "mean_rank": 35.163658243080626
+      }
+    },
+    "recomputed_float_matches_stored_train_history": true,
+    "recomputed_float_matches_stored_quantized_eval_float_side": true,
+    "recomputed_quantized_matches_stored_quantized_eval_quant_side": true,
+    "gallery_and_probe_quantized_with_same_model_quantize_call": true,
+    "n_probes_dropped_missing_gallery_entry": 0,
+    "pass": true
+  },
+  "check_4_distance_ranking_correctness": {
+    "spot_checks_4_random_test_probes": [
+      {
+        "probe_index": 636,
+        "true_identity": "272_R",
+        "manual_ssd_to_true_gallery_entry": 26693,
+        "manual_rank_1indexed": 1,
+        "pipeline_rank_1indexed": 1,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "272_R",
+          "347_R",
+          "092_L"
+        ]
+      },
+      {
+        "probe_index": 1381,
+        "true_identity": "566_L",
+        "manual_ssd_to_true_gallery_entry": 13467,
+        "manual_rank_1indexed": 1,
+        "pipeline_rank_1indexed": 1,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "566_L",
+          "723_R",
+          "513_L"
+        ]
+      },
+      {
+        "probe_index": 1537,
+        "true_identity": "623_L",
+        "manual_ssd_to_true_gallery_entry": 60664,
+        "manual_rank_1indexed": 191,
+        "pipeline_rank_1indexed": 191,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "450_L",
+          "319_L",
+          "364_L"
+        ]
+      },
+      {
+        "probe_index": 2247,
+        "true_identity": "910_L",
+        "manual_ssd_to_true_gallery_entry": 47154,
+        "manual_rank_1indexed": 4,
+        "pipeline_rank_1indexed": 4,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "293_R",
+          "319_R",
+          "857_R"
+        ]
+      }
+    ],
+    "all_spot_checks_match": true,
+    "toy_case_true_col_is_smallest_value_expected_rank_1": "1",
+    "toy_case_recall_at_k1_of_rank1_expected_true": true,
+    "toy_case_recall_at_k0_of_rank1_expected_false": false,
+    "distance_metric": "SSD on quantized integer embeddings (sum((g-p)**2)), matching BFV deployment metric",
+    "pass": true
+  },
+  "check_6_random_embedding_baseline": {
+    "n_gallery": 1998,
+    "n_probes": 2493,
+    "random_recall_at_10": 0.004011231448054553,
+    "random_recall_at_50": 0.022462896109105495,
+    "random_median_rank": 995.0,
+    "random_mean_rank": 986.7348576012836,
+    "expected_recall_at_10_chance": 0.005005005005005005,
+    "expected_recall_at_50_chance": 0.025025025025025027,
+    "expected_mean_rank_chance": 999.5,
+    "pass": true
+  },
+  "check_7_rank_distribution": {
+    "n_probes": 2493,
+    "median_rank_recomputed": 2.0,
+    "mean_rank_recomputed": 35.163658243080626,
+    "frac_rank_eq_1": 0.4805455274769354,
+    "frac_rank_le_2": 0.5752105896510229,
+    "frac_rank_le_5": 0.6738868832731648,
+    "frac_rank_le_10": 0.7436823104693141,
+    "frac_rank_le_50": 0.8804653028479743,
+    "frac_rank_le_100": 0.9286000802246289,
+    "frac_rank_gt_100": 0.07139991977537104,
+    "max_rank": 1784,
+    "recall_at_10_consistency_check": true,
+    "spot_checks": [
+      {
+        "probe_index": 636,
+        "true_identity": "272_R",
+        "manual_ssd_to_true_gallery_entry": 26693,
+        "manual_rank_1indexed": 1,
+        "pipeline_rank_1indexed": 1,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "272_R",
+          "347_R",
+          "092_L"
+        ]
+      },
+      {
+        "probe_index": 1381,
+        "true_identity": "566_L",
+        "manual_ssd_to_true_gallery_entry": 13467,
+        "manual_rank_1indexed": 1,
+        "pipeline_rank_1indexed": 1,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "566_L",
+          "723_R",
+          "513_L"
+        ]
+      },
+      {
+        "probe_index": 1537,
+        "true_identity": "623_L",
+        "manual_ssd_to_true_gallery_entry": 60664,
+        "manual_rank_1indexed": 191,
+        "pipeline_rank_1indexed": 191,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "450_L",
+          "319_L",
+          "364_L"
+        ]
+      },
+      {
+        "probe_index": 2247,
+        "true_identity": "910_L",
+        "manual_ssd_to_true_gallery_entry": 47154,
+        "manual_rank_1indexed": 4,
+        "pipeline_rank_1indexed": 4,
+        "match": true,
+        "top3_gallery_identities_by_manual_ssd": [
+          "293_R",
+          "319_R",
+          "857_R"
+        ]
+      }
+    ],
+    "pass": true
+  },
+  "check_8_monotonicity_and_batchnorm": {
+    "recall_curve_quantized": {
+      "R@10": 0.7436823104693141,
+      "R@50": 0.8804653028479743,
+      "R@100": 0.9286000802246289,
+      "R@300": 0.9731247492980345
+    },
+    "monotonic_nondecreasing": true,
+    "model_eval_mode_confirmed": true,
+    "batchnorm_uses_running_stats_note": "embed_identities/embed_all_probes both call model.eval() as their first line before any forward pass; verified model.training=False above.",
+    "dev_gallery_pool_train_plus_val_size": 1699,
+    "dev_gallery_pool_contains_test_identity": [],
+    "pass": true
+  }
+}

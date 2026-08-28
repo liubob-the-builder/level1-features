@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "purpose": "De-duplicated re-run of all_features_nn_testsplit_comparison.json: excludes the 5 test probes byte-identical to their own gallery image (CASIA-Iris-Thousand source-data artifact) from every feature's evaluation, not just the NN.",
+    "duplicate_probes_excluded": [
+      "029_L_3",
+      "230_R_5",
+      "236_R_2",
+      "543_L_2",
+      "703_L_7"
+    ],
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "n_test_identities": 299,
+    "n_gallery_identities": 1998,
+    "n_probes_hand_designed": 2488,
+    "reference_undeduplicated_file": "level1-features/results/all_features_nn_testsplit_comparison.json",
+    "nn_source": "level1-features/results/audit_nn_v3_dedup_metrics.json (quantized_deduplicated)",
+    "distance_metrics": {
+      "DFT/AC/RL-C9/RL-C6/NN": "SSD",
+      "Christina": "L1 (compute_l1_distance_plaintext)"
+    },
+    "git_commit": "a9eb179ecea57697e32a4fe26cf5c0e81279f114",
+    "date": "2026-08-26"
+  },
+  "results": {
+    "DFT": {
+      "dim": 21,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 26.0,
+      "mean_rank": 169.93287781350483,
+      "eer": 0.190112540192926,
+      "d_prime": 1.3956123416748263,
+      "recall_at_10": 0.3967041800643087,
+      "recall_at_50": 0.5896302250803859,
+      "recall_at_100": 0.6812700964630225,
+      "recall_at_300": 0.8271704180064309
+    },
+    "AC": {
+      "dim": 160,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 50.5,
+      "mean_rank": 259.2254823151125,
+      "eer": 0.28377483830246975,
+      "d_prime": 0.7091223992733339,
+      "recall_at_10": 0.3553054662379421,
+      "recall_at_50": 0.5,
+      "recall_at_100": 0.5868167202572347,
+      "recall_at_300": 0.7379421221864951
+    },
+    "RL-C9": {
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 28.0,
+      "mean_rank": 195.52090032154342,
+      "eer": 0.21131496279789463,
+      "d_prime": 1.2644859360101417,
+      "recall_at_10": 0.4015273311897106,
+      "recall_at_50": 0.572347266881029,
+      "recall_at_100": 0.6567524115755627,
+      "recall_at_300": 0.8018488745980707
+    },
+    "RL-C6": {
+      "dim": 384,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 27.0,
+      "mean_rank": 191.06712218649517,
+      "eer": 0.20340639576728436,
+      "d_prime": 1.2930834047409414,
+      "recall_at_10": 0.39991961414790994,
+      "recall_at_50": 0.5707395498392283,
+      "recall_at_100": 0.6611736334405145,
+      "recall_at_300": 0.805064308681672
+    },
+    "Christina (inverted)": {
+      "convention": "inverted",
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 12.0,
+      "mean_rank": 121.39831189710611,
+      "recall_at_10": 0.48392282958199356,
+      "recall_at_50": 0.6796623794212219,
+      "recall_at_100": 0.7636655948553055,
+      "recall_at_300": 0.8830385852090032
+    },
+    "Christina (raw)": {
+      "convention": "raw",
+      "dim": 576,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 50.0,
+      "mean_rank": 218.9815112540193,
+      "recall_at_10": 0.3545016077170418,
+      "recall_at_50": 0.5012057877813505,
+      "recall_at_100": 0.582395498392283,
+      "recall_at_300": 0.7632636655948553
+    },
+    "NN (v3, learned, quantized)": {
+      "dim": 64,
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 2.0,
+      "mean_rank": 35.23231511254019,
+      "recall_at_10": 0.7431672025723473,
+      "recall_at_50": 0.8802250803858521,
+      "recall_at_100": 0.9284565916398714,
+      "recall_at_300": 0.9730707395498392
+    }
+  }
+}

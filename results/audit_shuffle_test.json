@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "audit_date": "2026-08-22",
+    "purpose": "label-shuffle leakage detector: gallery<->probe identity correspondence derangement-scrambled within every training batch, so training receives no genuine identity signal; everything else (images, architecture, loss, eval protocol) identical to the real pipeline.",
+    "throwaway_checkpoint_path": "/tmp/claude-1000/-home-liubobz-iris-recognition/d23402e0-69ed-44c5-a1a7-ac9d1b699f52/scratchpad/audit_nn_shuffle_checkpoint.pt",
+    "note": "This checkpoint is NOT a real result and is not saved under level1-features/results/.",
+    "hyperparameters": {
+      "batch_size": 32,
+      "steps_per_epoch": 50,
+      "epochs": 5,
+      "seed": 777,
+      "elapsed_seconds": 743.5361201763153
+    },
+    "sanity_check_accidental_matches_in_batch0": 0
+  },
+  "shuffle_trained_model_test_metrics": {
+    "n_gallery": 1998,
+    "n_probes": 2493,
+    "recall_at_10": 0.018050541516245487,
+    "recall_at_50": 0.06979542719614922,
+    "recall_at_100": 0.11592458884877657,
+    "recall_at_300": 0.26073004412354595,
+    "median_rank": 711.0,
+    "mean_rank": 791.23706377858
+  },
+  "chance_floor_recall_at_10": 0.005005005005005005,
+  "chance_floor_recall_at_50": 0.025025025025025027,
+  "real_v3_recall_at_10_for_comparison": 0.7437,
+  "collapsed_to_near_chance": true,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.0011546230316162,
+      "train_d_pos_mean": 0.0016436563432216645,
+      "train_d_neg_mean": 0.0004890350997447967
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.00007306098938,
+      "train_d_pos_mean": 0.0001354058086872101,
+      "train_d_neg_mean": 6.235122680664062e-05
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.000032923221588,
+      "train_d_pos_mean": 6.470486521720887e-05,
+      "train_d_neg_mean": 3.179222345352173e-05
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.0000202107429503,
+      "train_d_pos_mean": 4.130497574806213e-05,
+      "train_d_neg_mean": 2.1097809076309203e-05
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.0000162863731383,
+      "train_d_pos_mean": 3.2245516777038575e-05,
+      "train_d_neg_mean": 1.5963464975357055e-05
+    }
+  ],
+  "followup_controls": {
+    "randomized_tie_break_10_trials": {
+      "purpose": "rule out that above-chance recall is an artifact of deterministic argsort tie-breaking on a collapsed/near-constant embedding space",
+      "R@10_mean": 0.0187,
+      "R@10_std": 0.0011,
+      "R@50_mean": 0.0649,
+      "R@50_std": 0.0024,
+      "median_rank_mean": 713.2,
+      "mean_rank_mean": 792.4,
+      "conclusion": "unchanged from default tie-break (0.0181) -- not a tie-breaking artifact"
+    },
+    "untrained_random_init_control": {
+      "purpose": "isolate whether the above-pure-chance signal comes from the 5 epochs of scrambled-label training, or is simply the architecture's generic (untrained) response to real iris texture",
+      "zero_gradient_steps_R@10": 0.0413,
+      "zero_gradient_steps_R@50": 0.1296,
+      "zero_gradient_steps_R@100": 0.2158,
+      "zero_gradient_steps_median_rank": 395.0,
+      "zero_gradient_steps_mean_rank": 534.4,
+      "conclusion": "an UNTRAINED random-init model scores HIGHER (R@10=0.041) than the shuffle-trained model (R@10=0.018) on the identical real test protocol. This proves the above-chance signal is an architecture-only prior (circular conv filters respond somewhat to real iris texture even with zero training -- a known, benign effect for CNN features in metric learning/retrieval), present with or without any training, and is NOT something learned from the scrambled identity labels. Garbage-label training in fact makes it slightly WORSE than doing nothing, consistent with genuine embedding collapse under a meaningless loss signal."
+    },
+    "final_verdict": "Recall collapses from 0.7437 (real, correctly-labeled training) to 0.0181 (scrambled labels) -- a 41x drop -- and the small residual above the pure-independent-random floor (0.0050) is fully explained by an architecture-only prior unrelated to training labels, not by any leakage path in the split/eval pipeline. Check 5 PASSES."
+  }
+}
