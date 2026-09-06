@@ -1,0 +1,365 @@
+{
+  "metadata": {
+    "purpose": "Fully-held-out gallery audit: restricts the gallery to only the 299 test identities (removing the 1699 train+val identities that appear as distractors in the standard 1998-identity gallery), to check whether the NN's advantage over the hand-designed features persists when neither the probes nor the gallery distractors were seen during training. The 299-identity gallery is a strictly easier task for every feature (fewer distractors), so absolute recall rises for all of them; only the NN-vs-hand-designed-feature GAP is the quantity of interest.",
+    "gallery_path": "casia-extraction/casia-codes-2d (casia-extraction/casia-codes-christina for Christina's feature)",
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "split_seed": 0,
+    "subject_count": {
+      "full_gallery_identities": 1998,
+      "heldout_gallery_identities": 299,
+      "test_probe_identities": 299
+    },
+    "n_probes": 2488,
+    "duplicate_probes_excluded": [
+      "029_L_3",
+      "230_R_5",
+      "236_R_2",
+      "543_L_2",
+      "703_L_7"
+    ],
+    "seeds_used": {
+      "split_seed": 0,
+      "note": "no randomness in this audit itself; ranking is deterministic"
+    },
+    "reference_files": {
+      "nn": "level1-features/results/audit_nn_v3_dedup_metrics.json",
+      "hand_designed_and_christina": "level1-features/results/audit_all_features_dedup_testsplit.json"
+    },
+    "distance_metrics": {
+      "NN/DFT/AC/RL-C9/RL-C6": "SSD",
+      "Christina": "L1 (compute_l1_distance_plaintext)"
+    },
+    "k_values": [
+      10,
+      50,
+      100,
+      300
+    ],
+    "git_commit": "6813163dc6c872e3b25f3a51b5f1abc1def282af",
+    "date": "2026-09-04"
+  },
+  "reference_checks": {
+    "NN (v3, quantized)": {
+      "matches_reference": true
+    },
+    "DFT": {
+      "matches_reference": true
+    },
+    "AC": {
+      "matches_reference": true
+    },
+    "RL-C9": {
+      "matches_reference": true
+    },
+    "RL-C6": {
+      "matches_reference": true
+    },
+    "Christina (inverted)": {
+      "matches_reference": true
+    }
+  },
+  "probe_genuine_match_coverage_in_heldout_gallery": {
+    "NN (v3, quantized)": {
+      "n_probes": 2488,
+      "n_missing_genuine_match": 0,
+      "missing_probe_identities": [],
+      "all_present": true
+    },
+    "DFT": {
+      "n_probes": 2488,
+      "n_missing_genuine_match": 0,
+      "missing_probe_identities": [],
+      "all_present": true
+    },
+    "AC": {
+      "n_probes": 2488,
+      "n_missing_genuine_match": 0,
+      "missing_probe_identities": [],
+      "all_present": true
+    },
+    "RL-C9": {
+      "n_probes": 2488,
+      "n_missing_genuine_match": 0,
+      "missing_probe_identities": [],
+      "all_present": true
+    },
+    "RL-C6": {
+      "n_probes": 2488,
+      "n_missing_genuine_match": 0,
+      "missing_probe_identities": [],
+      "all_present": true
+    },
+    "Christina (inverted)": {
+      "n_probes": 2488,
+      "n_missing_genuine_match": 0,
+      "missing_probe_identities": [],
+      "all_present": true
+    }
+  },
+  "results": {
+    "NN (v3, quantized)": {
+      "full_1998_recomputed": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 2.0,
+        "mean_rank": 35.23231511254019,
+        "recall_at_10": 0.7431672025723473,
+        "recall_at_50": 0.8802250803858521,
+        "recall_at_100": 0.9284565916398714,
+        "recall_at_300": 0.9730707395498392
+      },
+      "full_1998_stored_reference": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "recall_at_10": 0.7431672025723473,
+        "recall_at_50": 0.8802250803858521,
+        "recall_at_100": 0.9284565916398714,
+        "recall_at_300": 0.9730707395498392,
+        "median_rank": 2.0,
+        "mean_rank": 35.23231511254019
+      },
+      "heldout_299": {
+        "n_gallery": 299,
+        "n_probes": 2488,
+        "median_rank": 1.0,
+        "mean_rank": 6.985530546623794,
+        "recall_at_10": 0.8814308681672026,
+        "recall_at_50": 0.9702572347266881,
+        "recall_at_100": 0.9879421221864951,
+        "recall_at_300": 1.0
+      }
+    },
+    "DFT": {
+      "full_1998_recomputed": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 26.0,
+        "mean_rank": 169.93287781350483,
+        "recall_at_10": 0.3967041800643087,
+        "recall_at_50": 0.5896302250803859,
+        "recall_at_100": 0.6812700964630225,
+        "recall_at_300": 0.8271704180064309
+      },
+      "full_1998_stored_reference": {
+        "dim": 21,
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 26.0,
+        "mean_rank": 169.93287781350483,
+        "eer": 0.190112540192926,
+        "d_prime": 1.3956123416748263,
+        "recall_at_10": 0.3967041800643087,
+        "recall_at_50": 0.5896302250803859,
+        "recall_at_100": 0.6812700964630225,
+        "recall_at_300": 0.8271704180064309
+      },
+      "heldout_299": {
+        "n_gallery": 299,
+        "n_probes": 2488,
+        "median_rank": 5.0,
+        "mean_rank": 26.67403536977492,
+        "recall_at_10": 0.6117363344051447,
+        "recall_at_50": 0.8336012861736335,
+        "recall_at_100": 0.9184083601286174,
+        "recall_at_300": 1.0
+      }
+    },
+    "AC": {
+      "full_1998_recomputed": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 50.5,
+        "mean_rank": 259.2254823151125,
+        "recall_at_10": 0.3553054662379421,
+        "recall_at_50": 0.5,
+        "recall_at_100": 0.5868167202572347,
+        "recall_at_300": 0.7379421221864951
+      },
+      "full_1998_stored_reference": {
+        "dim": 160,
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 50.5,
+        "mean_rank": 259.2254823151125,
+        "eer": 0.28377483830246975,
+        "d_prime": 0.7091223992733339,
+        "recall_at_10": 0.3553054662379421,
+        "recall_at_50": 0.5,
+        "recall_at_100": 0.5868167202572347,
+        "recall_at_300": 0.7379421221864951
+      },
+      "heldout_299": {
+        "n_gallery": 299,
+        "n_probes": 2488,
+        "median_rank": 8.0,
+        "mean_rank": 41.305868167202576,
+        "recall_at_10": 0.5369774919614148,
+        "recall_at_50": 0.7467845659163987,
+        "recall_at_100": 0.8496784565916399,
+        "recall_at_300": 1.0
+      }
+    },
+    "RL-C9": {
+      "full_1998_recomputed": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 28.0,
+        "mean_rank": 195.52090032154342,
+        "recall_at_10": 0.4015273311897106,
+        "recall_at_50": 0.572347266881029,
+        "recall_at_100": 0.6567524115755627,
+        "recall_at_300": 0.8018488745980707
+      },
+      "full_1998_stored_reference": {
+        "dim": 576,
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 28.0,
+        "mean_rank": 195.52090032154342,
+        "eer": 0.21131496279789463,
+        "d_prime": 1.2644859360101417,
+        "recall_at_10": 0.4015273311897106,
+        "recall_at_50": 0.572347266881029,
+        "recall_at_100": 0.6567524115755627,
+        "recall_at_300": 0.8018488745980707
+      },
+      "heldout_299": {
+        "n_gallery": 299,
+        "n_probes": 2488,
+        "median_rank": 5.0,
+        "mean_rank": 29.758842443729904,
+        "recall_at_10": 0.5968649517684887,
+        "recall_at_50": 0.8171221864951769,
+        "recall_at_100": 0.9063504823151125,
+        "recall_at_300": 1.0
+      }
+    },
+    "RL-C6": {
+      "full_1998_recomputed": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 27.0,
+        "mean_rank": 191.06712218649517,
+        "recall_at_10": 0.39991961414790994,
+        "recall_at_50": 0.5707395498392283,
+        "recall_at_100": 0.6611736334405145,
+        "recall_at_300": 0.805064308681672
+      },
+      "full_1998_stored_reference": {
+        "dim": 384,
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 27.0,
+        "mean_rank": 191.06712218649517,
+        "eer": 0.20340639576728436,
+        "d_prime": 1.2930834047409414,
+        "recall_at_10": 0.39991961414790994,
+        "recall_at_50": 0.5707395498392283,
+        "recall_at_100": 0.6611736334405145,
+        "recall_at_300": 0.805064308681672
+      },
+      "heldout_299": {
+        "n_gallery": 299,
+        "n_probes": 2488,
+        "median_rank": 5.0,
+        "mean_rank": 29.133440514469452,
+        "recall_at_10": 0.5944533762057878,
+        "recall_at_50": 0.815112540192926,
+        "recall_at_100": 0.9119774919614148,
+        "recall_at_300": 1.0
+      }
+    },
+    "Christina (inverted)": {
+      "full_1998_recomputed": {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 12.0,
+        "mean_rank": 121.39831189710611,
+        "recall_at_10": 0.48392282958199356,
+        "recall_at_50": 0.6796623794212219,
+        "recall_at_100": 0.7636655948553055,
+        "recall_at_300": 0.8830385852090032
+      },
+      "full_1998_stored_reference": {
+        "convention": "inverted",
+        "dim": 576,
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 12.0,
+        "mean_rank": 121.39831189710611,
+        "recall_at_10": 0.48392282958199356,
+        "recall_at_50": 0.6796623794212219,
+        "recall_at_100": 0.7636655948553055,
+        "recall_at_300": 0.8830385852090032
+      },
+      "heldout_299": {
+        "n_gallery": 299,
+        "n_probes": 2488,
+        "median_rank": 3.0,
+        "mean_rank": 19.187299035369776,
+        "recall_at_10": 0.7029742765273312,
+        "recall_at_50": 0.8894694533762058,
+        "recall_at_100": 0.9477491961414791,
+        "recall_at_300": 1.0
+      }
+    }
+  },
+  "recall_at_10_gap_nn_vs_hand_designed": {
+    "DFT": {
+      "full_1998": {
+        "nn_recall_at_10": 0.7431672025723473,
+        "feature_recall_at_10": 0.3967041800643087,
+        "ratio_nn_over_feature": 1.873353596757852,
+        "absolute_diff": 0.34646302250803857
+      },
+      "heldout_299": {
+        "nn_recall_at_10": 0.8814308681672026,
+        "feature_recall_at_10": 0.6117363344051447,
+        "ratio_nn_over_feature": 1.4408672798948752,
+        "absolute_diff": 0.2696945337620579
+      }
+    },
+    "AC": {
+      "full_1998": {
+        "nn_recall_at_10": 0.7431672025723473,
+        "feature_recall_at_10": 0.3553054662379421,
+        "ratio_nn_over_feature": 2.091628959276018,
+        "absolute_diff": 0.3878617363344051
+      },
+      "heldout_299": {
+        "nn_recall_at_10": 0.8814308681672026,
+        "feature_recall_at_10": 0.5369774919614148,
+        "ratio_nn_over_feature": 1.6414670658682637,
+        "absolute_diff": 0.34445337620578786
+      }
+    },
+    "RL-C9": {
+      "full_1998": {
+        "nn_recall_at_10": 0.7431672025723473,
+        "feature_recall_at_10": 0.4015273311897106,
+        "ratio_nn_over_feature": 1.8508508508508508,
+        "absolute_diff": 0.34163987138263663
+      },
+      "heldout_299": {
+        "nn_recall_at_10": 0.8814308681672026,
+        "feature_recall_at_10": 0.5968649517684887,
+        "ratio_nn_over_feature": 1.4767676767676767,
+        "absolute_diff": 0.28456591639871387
+      }
+    },
+    "RL-C6": {
+      "full_1998": {
+        "nn_recall_at_10": 0.7431672025723473,
+        "feature_recall_at_10": 0.39991961414790994,
+        "ratio_nn_over_feature": 1.8582914572864322,
+        "absolute_diff": 0.3432475884244373
+      },
+      "heldout_299": {
+        "nn_recall_at_10": 0.8814308681672026,
+        "feature_recall_at_10": 0.5944533762057878,
+        "ratio_nn_over_feature": 1.4827586206896552,
+        "absolute_diff": 0.28697749196141487
+      }
+    }
+  }
+}
