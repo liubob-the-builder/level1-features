@@ -1,0 +1,240 @@
+{
+  "metadata": {
+    "purpose": "Measure genuine/impostor fractional-HD distributions, degrees of freedom, mask occupancy and run-length distributions for SIC-Gen and real CASIA codes under one method, so real-vs-synthetic bit-level agreement is measured here rather than cited from the SIC-Gen paper.",
+    "supersedes": "experiments/validate_gen.py / results/hd2.png -- synthetic only, 100-subject generated directory, no numeric output saved.",
+    "date": "2026-09-03",
+    "git_commit": "6813163dc6c872e3b25f3a51b5f1abc1def282af",
+    "max_shift": 7,
+    "quick_mode": false,
+    "subject_limit_per_dataset": null,
+    "synthetic": {
+      "gallery_path": "sic-gen/sicgen_gallery_2000subjects",
+      "subject_count": 2000,
+      "seed": 20002,
+      "num_processes": 16,
+      "generator_git_commit": "7b7edd759d13de1ca3ca95a983868c2ea5e6f07b",
+      "pairs": "gallery = IC1 (1_template.txt); genuine probe = IC2 (2_template.txt); impostor pairs = all IC1 pairs"
+    },
+    "real": {
+      "data_source": "casia-extraction/casia-codes-2d",
+      "casia_manifest": "casia-extraction/manifest.json",
+      "open_iris_version": "1.11.1",
+      "identity_count_usable": 1998,
+      "subject_selection_rule": "first 1000 subjects, sorted numerically by subject ID",
+      "seeds_used": null,
+      "excluded_identities": [
+        "524_L",
+        "668_L"
+      ],
+      "exclusion_reason": "gallery image (index 00) failed segmentation (gallery_ok=False in manifest.json).",
+      "pairs": "gallery = stem '1' (image index 00); genuine probes = stems '2'-'10'; impostor pairs = all gallery pairs"
+    },
+    "mask_convention": "1 = valid in both datasets (Open Iris native; SIC-Gen's Template.add_noise stores the negation of the occlusion mask).",
+    "degrees_of_freedom_estimator": "mu(1-mu)/sigma^2 applied to the UNALIGNED impostor distribution, matching sic-gen/validation.py.",
+    "method_note": "All-pairs fractional HD computed via two matrix products on bipolar masked bits (exact in float32 at this bit count); no pair sampling.",
+    "run_length_note": "Run lengths counted within maximal contiguous valid-bit segments (features/rl_features.py's mask-aware convention), non-circular, applied identically to both datasets. Real codes are walked one 256-column phase channel at a time so no run crosses the seam."
+  },
+  "results": {
+    "synthetic": {
+      "n_gallery_codes": 2000,
+      "n_genuine_pairs": 2000,
+      "n_impostor_pairs": 1999000,
+      "impostor_pair_sampling": "none -- all gallery pairs used exhaustively",
+      "rotation_convention": "full-width roll over 512 angular positions",
+      "max_shift": 7,
+      "genuine_aligned": {
+        "n": 2000,
+        "mean": 0.1984092086441815,
+        "std": 0.06817961329865165,
+        "min": 0.06298828125,
+        "max": 0.400847852230072,
+        "median": 0.1831846907734871
+      },
+      "impostor_unaligned": {
+        "n": 1999000,
+        "mean": 0.4978973170779329,
+        "std": 0.03304209373288483,
+        "min": 0.3373446464538574,
+        "max": 0.650780439376831,
+        "median": 0.49792224168777466
+      },
+      "impostor_aligned": {
+        "n": 1999000,
+        "mean": 0.4571826283471354,
+        "std": 0.02161024850297303,
+        "min": 0.33033502101898193,
+        "max": 0.5062041282653809,
+        "median": 0.45980969071388245
+      },
+      "degrees_of_freedom_impostor_unaligned": 228.9798203702282,
+      "d_prime_genuine_aligned_vs_impostor_unaligned": 5.590228621297996,
+      "mask_valid_fraction_mean": 0.9399334716796875,
+      "run_lengths": {
+        "mean_run_length": 6.010158033366025,
+        "n_runs": 5124614,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.05774308074715481,
+          0.0391518268497881,
+          0.08189026529607889,
+          0.11645247817689293,
+          0.1511973389605539,
+          0.15178723704848796,
+          0.13518813319403178,
+          0.1055806349512373,
+          0.07109608645646287,
+          0.04159064468075059,
+          0.02091435569586314,
+          0.008318480182117132,
+          0.0039386381101093665,
+          0.0024247679922819554,
+          0.0019609281791760315,
+          0.0018110632332503482,
+          0.0017946717547897267,
+          0.0017622790711651647,
+          0.0016313423801285326,
+          0.0037657470396794766
+        ]
+      }
+    },
+    "real": {
+      "n_gallery_codes": 1998,
+      "n_genuine_pairs": 16457,
+      "n_impostor_pairs": 1995003,
+      "impostor_pair_sampling": "none -- all gallery pairs used exhaustively",
+      "rotation_convention": "per-channel roll: each 256-column phase channel rolled by the same k",
+      "max_shift": 7,
+      "genuine_aligned": {
+        "n": 16457,
+        "mean": 0.2511919361639408,
+        "std": 0.05337272361505824,
+        "min": 0.0,
+        "max": 0.4752993881702423,
+        "median": 0.25233736634254456
+      },
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.48222029721422427,
+        "std": 0.020038738738654242,
+        "min": 0.37148141860961914,
+        "max": 0.6464771032333374,
+        "median": 0.48226216435432434
+      },
+      "impostor_aligned": {
+        "n": 1995003,
+        "mean": 0.45817002168167037,
+        "std": 0.014738312425362833,
+        "min": 0.3562954366207123,
+        "max": 0.5534775257110596,
+        "median": 0.4589529037475586
+      },
+      "degrees_of_freedom_impostor_unaligned": 621.7986032462841,
+      "d_prime_genuine_aligned_vs_impostor_unaligned": 5.730933122423635,
+      "mask_valid_fraction_mean": 0.6760272846088276,
+      "run_lengths": {
+        "mean_run_length": 4.074413865656841,
+        "n_runs": 5431434,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.17218583526928616,
+          0.2151908685625196,
+          0.18244960723079762,
+          0.128063417506316,
+          0.08108447971566993,
+          0.06021356422631666,
+          0.04437446906286627,
+          0.03150162553756522,
+          0.02104932141309275,
+          0.01454772349254359,
+          0.010470347241630847,
+          0.007936393961521028,
+          0.006290972144741149,
+          0.005049863443061261,
+          0.003935056561490023,
+          0.0030594130389874938,
+          0.002382243805227128,
+          0.0018415026307969497,
+          0.0014675682333615764,
+          0.006905726922208757
+        ]
+      }
+    }
+  },
+  "rotation_convention_check_real": {
+    "per_channel_roll": {
+      "mean_genuine_hd": 0.25187214312329886,
+      "n_pairs": 2000
+    },
+    "full_width_roll": {
+      "mean_genuine_hd": 0.25352357284352184,
+      "n_pairs": 2000
+    },
+    "note": "Lower is better: the correct geometry recovers more of the true rotation. per_channel_roll is used for the real dataset. The two differ only at the channel seam (2k of 512 columns), so the gap is small; it is recorded to show the choice is not load-bearing."
+  },
+  "comparison": {
+    "impostor_unaligned_mean": {
+      "synthetic": 0.4978973170779329,
+      "real": 0.48222029721422427,
+      "difference": 0.01567701986370862
+    },
+    "degrees_of_freedom": {
+      "synthetic": 228.9798203702282,
+      "real": 621.7986032462841,
+      "ratio_synthetic_over_real": 0.36825399602824954
+    },
+    "genuine_aligned_mean": {
+      "synthetic": 0.1984092086441815,
+      "real": 0.2511919361639408
+    },
+    "mean_run_length": {
+      "synthetic": 6.010158033366025,
+      "real": 4.074413865656841
+    },
+    "mask_valid_fraction_mean": {
+      "synthetic": 0.9399334716796875,
+      "real": 0.6760272846088276
+    }
+  }
+}
