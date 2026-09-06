@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "purpose": "Mask-geometry leakage audit for CircularConvEncoder v3: tests whether the trained embedding partly exploits occlusion-mask geometry rather than iris texture, since mask shape is subject-correlated within this single-session dataset and identity-disjoint splits alone don't rule that out.",
+    "checkpoint_path": "level1-features/results/nn_level1_v3_checkpoint_best.pt",
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "reference_dedup_metrics": "level1-features/results/audit_nn_v3_dedup_metrics.json",
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "swap_seeds": [
+      0,
+      1,
+      2
+    ],
+    "swap_pool": "each image's channel-1 mask is drawn uniformly, per image, from any OTHER identity's available image(s) (gallery+probe pool combined)",
+    "scatter_subsample": 20000,
+    "scatter_seed": 12345,
+    "distance_metric": "SSD (embeddings), Euclidean (32-dim row-validity mask profile)",
+    "git_commit": "6813163dc6c872e3b25f3a51b5f1abc1def282af",
+    "date": "2026-08-28"
+  },
+  "selftests": {
+    "ssd_ranking_toy_check": "PASSED (ranks == [1, 1] on a hand-verified 2-dim toy example)",
+    "forward_with_mask_swap_equivalence_max_abs_diff": 0.0
+  },
+  "baseline_quantized_metrics": {
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "median_rank": 2.0,
+    "mean_rank": 35.23231511254019,
+    "recall_at_10": 0.7431672025723473,
+    "recall_at_50": 0.8802250803858521,
+    "recall_at_100": 0.9284565916398714,
+    "recall_at_300": 0.9730707395498392
+  },
+  "baseline_matches_dedup_reference": true,
+  "check1_mask_only_baseline": {
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "median_rank": 87.0,
+    "mean_rank": 245.89067524115757,
+    "recall_at_10": 0.24316720257234728,
+    "recall_at_50": 0.41519292604501606,
+    "recall_at_100": 0.5176848874598071,
+    "recall_at_300": 0.7238745980707395,
+    "random_floor_recall_at_10_reference": 0.005005005005005005,
+    "nn_recall_at_10_reference": 0.7431672025723473
+  },
+  "check2_mask_channel_swap": {
+    "per_seed": [
+      {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 258.5,
+        "mean_rank": 539.6475080385852,
+        "recall_at_10": 0.19011254019292603,
+        "recall_at_50": 0.3267684887459807,
+        "recall_at_100": 0.39308681672025725,
+        "recall_at_300": 0.5152733118971061,
+        "seed": 0
+      },
+      {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 279.5,
+        "mean_rank": 557.4778938906752,
+        "recall_at_10": 0.18930868167202572,
+        "recall_at_50": 0.3114951768488746,
+        "recall_at_100": 0.3782154340836013,
+        "recall_at_300": 0.5104501607717041,
+        "seed": 1
+      },
+      {
+        "n_gallery": 1998,
+        "n_probes": 2488,
+        "median_rank": 254.0,
+        "mean_rank": 515.0502411575562,
+        "recall_at_10": 0.18890675241157556,
+        "recall_at_50": 0.3094855305466238,
+        "recall_at_100": 0.38102893890675243,
+        "recall_at_300": 0.5305466237942122,
+        "seed": 2
+      }
+    ],
+    "mean": {
+      "median_rank": 264.0,
+      "mean_rank": 537.3918810289389,
+      "recall_at_10": 0.18944265809217575,
+      "recall_at_50": 0.3159163987138263,
+      "recall_at_100": 0.3841103965702037,
+      "recall_at_300": 0.5187566988210075
+    },
+    "std": {
+      "median_rank": 11.113055385446435,
+      "mean_rank": 17.394296364335812,
+      "recall_at_10": 0.0005012938621079721,
+      "recall_at_50": 0.007717320913137533,
+      "recall_at_100": 0.0064503768045073495,
+      "recall_at_300": 0.00856611327071052
+    },
+    "baseline_for_comparison": {
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 2.0,
+      "mean_rank": 35.23231511254019,
+      "recall_at_10": 0.7431672025723473,
+      "recall_at_50": 0.8802250803858521,
+      "recall_at_100": 0.9284565916398714,
+      "recall_at_300": 0.9730707395498392
+    }
+  },
+  "check3_distance_correlation": {
+    "n_impostor_pairs": 4968536,
+    "pearson_r": 0.39986309296724953,
+    "pearson_p": 0.0,
+    "spearman_rho": 0.38129798893166017,
+    "spearman_p": 0.0,
+    "scatter_path": "level1-features/results/audit_maskleak_check3_scatter.png"
+  }
+}

@@ -1,0 +1,284 @@
+{
+  "metadata": {
+    "purpose": "Check 7: repeats audit_maskleak2's Check 5 genuine-pair IoU-dissimilarity stratification for the hand-designed features (mask-aware DFT/AC/RL-C9), reported alongside NN v3 in the identical strata.",
+    "checkpoint_path": "level1-features/results/nn_level1_v3_checkpoint_best.pt",
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "reference_maskleak2_check5": "level1-features/results/audit_maskleak2_results.json",
+    "reference_dedup_allfeatures": "level1-features/results/audit_all_features_dedup_testsplit.json",
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "n_quartiles": 4,
+    "quartile_definition": "identical to audit_maskleak2_results.json's Check 5: genuine pairs sorted ascending by (1 - IoU) of the two true binary masks, split into 4 equal-sized chunks of 622 probes each; Q1=most similar masks, Q4=most dissimilar.",
+    "strata_verification": "PASSED -- reconstructed quartile assignment reproduces audit_maskleak2_results.json's stored per-quartile NN v3 numbers (n_probes, median_rank, recall_at_10/50/100/300) exactly, for all 4 quartiles.",
+    "hamming_daugman_baseline": "NOT included: a plain Daugman IrisCode Hamming-distance identification baseline on this exact split is not already computed anywhere in this repo (only row_redundancy_check.py's unrelated row-redundancy Hamming-distance diagnostic exists), and per instruction it was skipped rather than built.",
+    "git_commit": "6813163dc6c872e3b25f3a51b5f1abc1def282af",
+    "date": "2026-08-28"
+  },
+  "nn_v3_baseline_aggregate": {
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "median_rank": 2.0,
+    "mean_rank": 35.23231511254019,
+    "recall_at_10": 0.7431672025723473,
+    "recall_at_50": 0.8802250803858521,
+    "recall_at_100": 0.9284565916398714,
+    "recall_at_300": 0.9730707395498392
+  },
+  "hand_feature_aggregate": {
+    "DFT": {
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 26.0,
+      "mean_rank": 169.93287781350483,
+      "recall_at_10": 0.3967041800643087,
+      "recall_at_50": 0.5896302250803859,
+      "recall_at_100": 0.6812700964630225,
+      "recall_at_300": 0.8271704180064309
+    },
+    "AC": {
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 50.5,
+      "mean_rank": 259.2254823151125,
+      "recall_at_10": 0.3553054662379421,
+      "recall_at_50": 0.5,
+      "recall_at_100": 0.5868167202572347,
+      "recall_at_300": 0.7379421221864951
+    },
+    "RL-C9": {
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 28.0,
+      "mean_rank": 195.52090032154342,
+      "recall_at_10": 0.4015273311897106,
+      "recall_at_50": 0.572347266881029,
+      "recall_at_100": 0.6567524115755627,
+      "recall_at_300": 0.8018488745980707
+    }
+  },
+  "hand_feature_aggregate_matches_dedup_reference": true,
+  "quartiles_by_feature": {
+    "NN v3": [
+      {
+        "quartile": 1,
+        "n_probes": 622,
+        "median_rank": 1.0,
+        "recall_at_10": 0.9501607717041801,
+        "recall_at_50": 0.9758842443729904,
+        "recall_at_100": 0.9903536977491961,
+        "recall_at_300": 0.9983922829581994
+      },
+      {
+        "quartile": 2,
+        "n_probes": 622,
+        "median_rank": 1.0,
+        "recall_at_10": 0.819935691318328,
+        "recall_at_50": 0.9180064308681672,
+        "recall_at_100": 0.9485530546623794,
+        "recall_at_300": 0.9839228295819936
+      },
+      {
+        "quartile": 3,
+        "n_probes": 622,
+        "median_rank": 3.0,
+        "recall_at_10": 0.6752411575562701,
+        "recall_at_50": 0.8681672025723473,
+        "recall_at_100": 0.9196141479099679,
+        "recall_at_300": 0.977491961414791
+      },
+      {
+        "quartile": 4,
+        "n_probes": 622,
+        "median_rank": 9.0,
+        "recall_at_10": 0.5273311897106109,
+        "recall_at_50": 0.7588424437299035,
+        "recall_at_100": 0.8553054662379421,
+        "recall_at_300": 0.932475884244373
+      }
+    ],
+    "DFT": [
+      {
+        "quartile": 1,
+        "n_probes": 622,
+        "median_rank": 2.0,
+        "recall_at_10": 0.7122186495176849,
+        "recall_at_50": 0.8440514469453376,
+        "recall_at_100": 0.9019292604501608,
+        "recall_at_300": 0.9614147909967846
+      },
+      {
+        "quartile": 2,
+        "n_probes": 622,
+        "median_rank": 15.0,
+        "recall_at_10": 0.45819935691318325,
+        "recall_at_50": 0.6832797427652733,
+        "recall_at_100": 0.77491961414791,
+        "recall_at_300": 0.9147909967845659
+      },
+      {
+        "quartile": 3,
+        "n_probes": 622,
+        "median_rank": 46.0,
+        "recall_at_10": 0.2958199356913183,
+        "recall_at_50": 0.5192926045016077,
+        "recall_at_100": 0.6479099678456591,
+        "recall_at_300": 0.8327974276527331
+      },
+      {
+        "quartile": 4,
+        "n_probes": 622,
+        "median_rank": 181.5,
+        "recall_at_10": 0.12057877813504823,
+        "recall_at_50": 0.31189710610932475,
+        "recall_at_100": 0.4003215434083601,
+        "recall_at_300": 0.5996784565916399
+      }
+    ],
+    "AC": [
+      {
+        "quartile": 1,
+        "n_probes": 622,
+        "median_rank": 2.0,
+        "recall_at_10": 0.6929260450160771,
+        "recall_at_50": 0.8183279742765274,
+        "recall_at_100": 0.8697749196141479,
+        "recall_at_300": 0.9372990353697749
+      },
+      {
+        "quartile": 2,
+        "n_probes": 622,
+        "median_rank": 30.5,
+        "recall_at_10": 0.3842443729903537,
+        "recall_at_50": 0.5643086816720257,
+        "recall_at_100": 0.6591639871382636,
+        "recall_at_300": 0.7990353697749196
+      },
+      {
+        "quartile": 3,
+        "n_probes": 622,
+        "median_rank": 119.5,
+        "recall_at_10": 0.21543408360128619,
+        "recall_at_50": 0.3633440514469453,
+        "recall_at_100": 0.4662379421221865,
+        "recall_at_300": 0.6784565916398714
+      },
+      {
+        "quartile": 4,
+        "n_probes": 622,
+        "median_rank": 248.0,
+        "recall_at_10": 0.12861736334405144,
+        "recall_at_50": 0.2540192926045016,
+        "recall_at_100": 0.3520900321543408,
+        "recall_at_300": 0.5369774919614148
+      }
+    ],
+    "RL-C9": [
+      {
+        "quartile": 1,
+        "n_probes": 622,
+        "median_rank": 2.0,
+        "recall_at_10": 0.684887459807074,
+        "recall_at_50": 0.8231511254019293,
+        "recall_at_100": 0.8617363344051447,
+        "recall_at_300": 0.9131832797427653
+      },
+      {
+        "quartile": 2,
+        "n_probes": 622,
+        "median_rank": 16.0,
+        "recall_at_10": 0.4565916398713826,
+        "recall_at_50": 0.6270096463022508,
+        "recall_at_100": 0.7154340836012861,
+        "recall_at_300": 0.864951768488746
+      },
+      {
+        "quartile": 3,
+        "n_probes": 622,
+        "median_rank": 52.0,
+        "recall_at_10": 0.2909967845659164,
+        "recall_at_50": 0.49517684887459806,
+        "recall_at_100": 0.6028938906752411,
+        "recall_at_300": 0.7829581993569131
+      },
+      {
+        "quartile": 4,
+        "n_probes": 622,
+        "median_rank": 135.0,
+        "recall_at_10": 0.17363344051446947,
+        "recall_at_50": 0.3440514469453376,
+        "recall_at_100": 0.44694533762057875,
+        "recall_at_300": 0.6463022508038585
+      }
+    ]
+  },
+  "q1_to_q4_summary_by_feature": {
+    "NN v3": {
+      "recall_at_10_Q1": 0.9501607717041801,
+      "recall_at_10_Q4": 0.5273311897106109,
+      "recall_at_10_relative_drop_Q1_to_Q4": 0.4450084602368867,
+      "recall_at_50_Q1": 0.9758842443729904,
+      "recall_at_50_Q4": 0.7588424437299035,
+      "recall_at_50_relative_drop_Q1_to_Q4": 0.22240527182866562,
+      "recall_at_100_Q1": 0.9903536977491961,
+      "recall_at_100_Q4": 0.8553054662379421,
+      "recall_at_100_relative_drop_Q1_to_Q4": 0.13636363636363635,
+      "recall_at_300_Q1": 0.9983922829581994,
+      "recall_at_300_Q4": 0.932475884244373,
+      "recall_at_300_relative_drop_Q1_to_Q4": 0.06602254428341385,
+      "median_rank_Q1": 1.0,
+      "median_rank_Q4": 9.0,
+      "median_rank_Q4_over_Q1_ratio": 9.0
+    },
+    "DFT": {
+      "recall_at_10_Q1": 0.7122186495176849,
+      "recall_at_10_Q4": 0.12057877813504823,
+      "recall_at_10_relative_drop_Q1_to_Q4": 0.8306997742663657,
+      "recall_at_50_Q1": 0.8440514469453376,
+      "recall_at_50_Q4": 0.31189710610932475,
+      "recall_at_50_relative_drop_Q1_to_Q4": 0.6304761904761905,
+      "recall_at_100_Q1": 0.9019292604501608,
+      "recall_at_100_Q4": 0.4003215434083601,
+      "recall_at_100_relative_drop_Q1_to_Q4": 0.5561497326203209,
+      "recall_at_300_Q1": 0.9614147909967846,
+      "recall_at_300_Q4": 0.5996784565916399,
+      "recall_at_300_relative_drop_Q1_to_Q4": 0.3762541806020067,
+      "median_rank_Q1": 2.0,
+      "median_rank_Q4": 181.5,
+      "median_rank_Q4_over_Q1_ratio": 90.75
+    },
+    "AC": {
+      "recall_at_10_Q1": 0.6929260450160771,
+      "recall_at_10_Q4": 0.12861736334405144,
+      "recall_at_10_relative_drop_Q1_to_Q4": 0.8143851508120651,
+      "recall_at_50_Q1": 0.8183279742765274,
+      "recall_at_50_Q4": 0.2540192926045016,
+      "recall_at_50_relative_drop_Q1_to_Q4": 0.6895874263261297,
+      "recall_at_100_Q1": 0.8697749196141479,
+      "recall_at_100_Q4": 0.3520900321543408,
+      "recall_at_100_relative_drop_Q1_to_Q4": 0.5951940850277264,
+      "recall_at_300_Q1": 0.9372990353697749,
+      "recall_at_300_Q4": 0.5369774919614148,
+      "recall_at_300_relative_drop_Q1_to_Q4": 0.42710120068610635,
+      "median_rank_Q1": 2.0,
+      "median_rank_Q4": 248.0,
+      "median_rank_Q4_over_Q1_ratio": 124.0
+    },
+    "RL-C9": {
+      "recall_at_10_Q1": 0.684887459807074,
+      "recall_at_10_Q4": 0.17363344051446947,
+      "recall_at_10_relative_drop_Q1_to_Q4": 0.7464788732394366,
+      "recall_at_50_Q1": 0.8231511254019293,
+      "recall_at_50_Q4": 0.3440514469453376,
+      "recall_at_50_relative_drop_Q1_to_Q4": 0.58203125,
+      "recall_at_100_Q1": 0.8617363344051447,
+      "recall_at_100_Q4": 0.44694533762057875,
+      "recall_at_100_relative_drop_Q1_to_Q4": 0.4813432835820896,
+      "recall_at_300_Q1": 0.9131832797427653,
+      "recall_at_300_Q4": 0.6463022508038585,
+      "recall_at_300_relative_drop_Q1_to_Q4": 0.29225352112676056,
+      "median_rank_Q1": 2.0,
+      "median_rank_Q4": 135.0,
+      "median_rank_Q4_over_Q1_ratio": 67.5
+    }
+  }
+}

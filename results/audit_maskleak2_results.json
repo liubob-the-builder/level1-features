@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "purpose": "Part 2 of the mask-geometry leakage audit for CircularConvEncoder v3: constant-mask-channel ablation (Check 4), mask-dissimilarity stratification of genuine pairs (Check 5), and partial correlation of embedding vs mask-profile distance controlling for total mask validity (Check 6, extends Check 3 of audit_maskleak_results.json).",
+    "checkpoint_path": "level1-features/results/nn_level1_v3_checkpoint_best.pt",
+    "split_path": "level1-features/results/nn_identity_split.json",
+    "reference_dedup_metrics": "level1-features/results/audit_nn_v3_dedup_metrics.json",
+    "reference_check3_source": "level1-features/results/audit_maskleak_results.json (check3_distance_correlation)",
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "n_quartiles": 4,
+    "distance_metric": "SSD (embeddings), Euclidean (32-dim row-validity mask profile), IoU (binary masks)",
+    "git_commit": "6813163dc6c872e3b25f3a51b5f1abc1def282af",
+    "date": "2026-08-28"
+  },
+  "selftests": {
+    "ssd_ranking_toy_check": "PASSED (reused from audit_maskleak_main.py)",
+    "forward_with_mask_swap_equivalence_max_abs_diff": 0.0
+  },
+  "baseline_quantized_metrics": {
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "median_rank": 2.0,
+    "mean_rank": 35.23231511254019,
+    "recall_at_10": 0.7431672025723473,
+    "recall_at_50": 0.8802250803858521,
+    "recall_at_100": 0.9284565916398714,
+    "recall_at_300": 0.9730707395498392
+  },
+  "baseline_matches_dedup_reference": true,
+  "check4_constant_mask_channel": {
+    "n_gallery": 1998,
+    "n_probes": 2488,
+    "median_rank": 7.0,
+    "mean_rank": 91.91318327974277,
+    "recall_at_10": 0.5434083601286174,
+    "recall_at_50": 0.719855305466238,
+    "recall_at_100": 0.7930064308681672,
+    "recall_at_300": 0.9180064308681672,
+    "baseline_for_comparison": {
+      "n_gallery": 1998,
+      "n_probes": 2488,
+      "median_rank": 2.0,
+      "mean_rank": 35.23231511254019,
+      "recall_at_10": 0.7431672025723473,
+      "recall_at_50": 0.8802250803858521,
+      "recall_at_100": 0.9284565916398714,
+      "recall_at_300": 0.9730707395498392
+    }
+  },
+  "check5_mask_dissimilarity_stratification": {
+    "genuine_pair_definition": "gallery contains exactly one image per identity (stem '1'), so every probe has exactly one genuine gallery match -- no multi-genuine-pair handling was needed.",
+    "n_quartiles": 4,
+    "quartile_definition": "genuine pairs sorted ascending by dissimilarity and split into 4 equal-sized chunks (n=2488/4=622 each); Q1=most similar masks, Q4=most dissimilar.",
+    "by_iou_dissimilarity": [
+      {
+        "quartile": 1,
+        "n_probes": 622,
+        "median_rank": 1.0,
+        "mean_genuine_embedding_distance": 17757.5625,
+        "mean_impostor_embedding_distance": 102330.734375,
+        "recall_at_10": 0.9501607717041801,
+        "recall_at_50": 0.9758842443729904,
+        "recall_at_100": 0.9903536977491961,
+        "recall_at_300": 0.9983922829581994
+      },
+      {
+        "quartile": 2,
+        "n_probes": 622,
+        "median_rank": 1.0,
+        "mean_genuine_embedding_distance": 26988.322265625,
+        "mean_impostor_embedding_distance": 103010.6875,
+        "recall_at_10": 0.819935691318328,
+        "recall_at_50": 0.9180064308681672,
+        "recall_at_100": 0.9485530546623794,
+        "recall_at_300": 0.9839228295819936
+      },
+      {
+        "quartile": 3,
+        "n_probes": 622,
+        "median_rank": 3.0,
+        "mean_genuine_embedding_distance": 35080.66015625,
+        "mean_impostor_embedding_distance": 106878.6640625,
+        "recall_at_10": 0.6752411575562701,
+        "recall_at_50": 0.8681672025723473,
+        "recall_at_100": 0.9196141479099679,
+        "recall_at_300": 0.977491961414791
+      },
+      {
+        "quartile": 4,
+        "n_probes": 622,
+        "median_rank": 9.0,
+        "mean_genuine_embedding_distance": 46899.74609375,
+        "mean_impostor_embedding_distance": 118980.1953125,
+        "recall_at_10": 0.5273311897106109,
+        "recall_at_50": 0.7588424437299035,
+        "recall_at_100": 0.8553054662379421,
+        "recall_at_300": 0.932475884244373
+      }
+    ],
+    "by_row_validity_profile_distance": [
+      {
+        "quartile": 1,
+        "n_probes": 622,
+        "median_rank": 1.0,
+        "mean_genuine_embedding_distance": 18692.388671875,
+        "mean_impostor_embedding_distance": 104441.3203125,
+        "recall_at_10": 0.9469453376205788,
+        "recall_at_50": 0.9758842443729904,
+        "recall_at_100": 0.9887459807073955,
+        "recall_at_300": 1.0
+      },
+      {
+        "quartile": 2,
+        "n_probes": 622,
+        "median_rank": 1.0,
+        "mean_genuine_embedding_distance": 28067.568359375,
+        "mean_impostor_embedding_distance": 106956.328125,
+        "recall_at_10": 0.8295819935691319,
+        "recall_at_50": 0.9340836012861736,
+        "recall_at_100": 0.9662379421221865,
+        "recall_at_300": 0.9823151125401929
+      },
+      {
+        "quartile": 3,
+        "n_probes": 622,
+        "median_rank": 3.0,
+        "mean_genuine_embedding_distance": 33793.640625,
+        "mean_impostor_embedding_distance": 107638.5703125,
+        "recall_at_10": 0.707395498392283,
+        "recall_at_50": 0.8906752411575563,
+        "recall_at_100": 0.9340836012861736,
+        "recall_at_300": 0.9839228295819936
+      },
+      {
+        "quartile": 4,
+        "n_probes": 622,
+        "median_rank": 11.5,
+        "mean_genuine_embedding_distance": 46172.6875,
+        "mean_impostor_embedding_distance": 112164.0390625,
+        "recall_at_10": 0.4887459807073955,
+        "recall_at_50": 0.7202572347266881,
+        "recall_at_100": 0.8247588424437299,
+        "recall_at_300": 0.9260450160771704
+      }
+    ]
+  },
+  "check6_partial_correlation": {
+    "n_impostor_pairs": 4968536,
+    "reference_pearson_r": 0.39986309296724953,
+    "reference_pearson_p": 0.0,
+    "reference_spearman_rho": 0.38129798893166017,
+    "reference_spearman_p": 0.0,
+    "partial_pearson_controlling_v_sum_v_diff": 0.2650157669321958,
+    "partial_spearman_controlling_v_sum_v_diff": 0.25677302537980534,
+    "covariates": "v_sum = v_probe + v_gallery, v_diff = |v_probe - v_gallery|, where v is each image's overall valid-bit fraction (mean over the full 32x512 mask)",
+    "method_note": "Partial correlation = Pearson correlation of the residuals of each variable after OLS regression on [v_sum, v_diff, intercept]. Partial Spearman computed by rank-transforming all four variables first, then taking the partial Pearson correlation of the ranks."
+  }
+}
