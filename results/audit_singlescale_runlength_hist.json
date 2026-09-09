@@ -1,0 +1,339 @@
+{
+  "metadata": {
+    "purpose": "Plot-ready run-length distributions for the coarse single-scale single-phase CASIA region (the real slice closest to SIC-Gen) alongside SIC-Gen's, plus the other phase channel of the same scale so the channel choice can be checked.",
+    "analysis_only": "No re-extraction, no retraining. Reads codes already exported by casia-extraction/extract_casia.py and the 2000-subject SIC-Gen gallery. No existing result file is modified.",
+    "date": "2026-09-06",
+    "git_commit": "96b39de63d3a079f9b51b65267d0d431a26aceb5",
+    "related_files": {
+      "per_scale_hd_statistics": "results/audit_singlescale_results.json",
+      "whole_code_comparison": "results/hd_distribution_real_vs_synthetic.json"
+    },
+    "phase_channel_convention": {
+      "cols_0_255": "REAL part of the Gabor response",
+      "cols_256_511": "IMAGINARY part, over the SAME 256 angular positions",
+      "source": "iris/nodes/encoder/iris_encoder.py builds each scale as np.stack([response.real > 0, response.imag > 0], axis=-1), so channel index 0 is the real part; christina-fhe-fis/filter_fhe_iris_complete.py extract_iris_code concatenates channel 0 then channel 1 along the angular axis, putting the real part in cols 0-255.",
+      "answer": "The 16x256 regions in audit_singlescale_results.json are the REAL phase channel."
+    },
+    "scale_convention": {
+      "rows_0_15": "Gabor scale 0 -- open-iris pipeline.yaml filter 0, lambda_phi=28.0, kernel_size [41,21] (coarse)",
+      "rows_16_31": "Gabor scale 1 -- filter 1, lambda_phi=8, kernel_size [17,21] (fine)"
+    },
+    "estimator": "run_length_stats imported unmodified from experiments/hd_distribution_real_vs_synthetic.py: runs within maximal contiguous valid-bit segments, mask-aware (an occluded bit terminates a run and is not counted), non-circular, walked one phase channel at a time. Degrees of freedom via mu(1-mu)/sigma^2 on the unaligned impostor distribution, all pairs, no sampling.",
+    "histogram_format": "histogram_normalised[i] is the fraction of runs of length histogram_bin_labels[i]; bins are 1..19 then '>=20' pooled. Fractions sum to 1 and are directly comparable across distributions despite very different n_runs. histogram_counts_derived is round(fraction * n_runs), given for convenience only -- the fractions are authoritative.",
+    "real": {
+      "data_source": "casia-extraction/casia-codes-2d",
+      "open_iris_version": "1.11.1",
+      "identity_count_usable": 1998,
+      "codes_used": "gallery only (stem '1', image index 00)",
+      "excluded_identities": [
+        "524_L",
+        "668_L"
+      ],
+      "seeds_used": null
+    },
+    "synthetic": {
+      "gallery_path": "sic-gen/sicgen_gallery_2000subjects",
+      "subject_count": 2000,
+      "seed": 20002,
+      "codes_used": "IC1 (1_template.txt) of each subject"
+    },
+    "caveats": [
+      "The '>=20' bin pools all longer runs: 0.8% of runs for the CASIA region and 0.4% for SIC-Gen. mean_run_length is computed from uncapped totals and is unaffected by the cap, so a histogram drawn from these bins will slightly understate the tail relative to the reported mean.",
+      "The CASIA regions are 4096 bits per code against SIC-Gen's 16384, and carry ~0.65 mask valid fraction against SIC-Gen's 0.94, so the CASIA histograms rest on fewer valid bits per code even though the total run count is large.",
+      "Structural match is approximate, not exact: SIC-Gen is a single continuous 512-angle axis, while these CASIA regions are 256 angles from one phase channel of one Gabor scale. Numerical proximity of the run-length distributions is not evidence the two codes are built the same way."
+    ]
+  },
+  "distributions": {
+    "casia_scale0_real": {
+      "label": "casia_scale0_real",
+      "description": "CASIA rows 0-15 (Gabor scale 0, coarse, lambda_phi=28), cols 0-255 = REAL phase channel. The region closest to SIC-Gen in audit_singlescale_results.json.",
+      "shape": [
+        16,
+        256
+      ],
+      "n_codes": 1998,
+      "run_length_n_blocks": 1,
+      "mask_valid_fraction_mean": 0.6511601933965215,
+      "run_lengths": {
+        "mean_run_length": 7.007312419541688,
+        "n_runs": 760487,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.04170879975594586,
+          0.05453479152174857,
+          0.06759352888346547,
+          0.08481538803424647,
+          0.10665665553783299,
+          0.1280981791930697,
+          0.13023628280299335,
+          0.11107356207272445,
+          0.0787061448782162,
+          0.05354332158209148,
+          0.03651081478052879,
+          0.026660547780566927,
+          0.020526320634014782,
+          0.016265892776602363,
+          0.0122027069496257,
+          0.009032370047088248,
+          0.006251257417944028,
+          0.004435315791065462,
+          0.0032663280240161894,
+          0.00788179153621298
+        ],
+        "histogram_counts_derived": [
+          31719,
+          41473,
+          51404,
+          64501,
+          81111,
+          97417,
+          99043,
+          84470,
+          59855,
+          40719,
+          27766,
+          20275,
+          15610,
+          12370,
+          9280,
+          6869,
+          4754,
+          3373,
+          2484,
+          5994
+        ],
+        "fraction_runs_length_1_or_2": 0.09624359127769443,
+        "modal_run_length": "7",
+        "modal_run_length_fraction": 0.13023628280299335,
+        "tail_fraction_at_or_above_20": 0.00788179153621298
+      },
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.4902648170486145,
+        "std": 0.03193776613761773,
+        "min": 0.24725274741649628,
+        "max": 0.7790697813034058,
+        "median": 0.4903424084186554
+      },
+      "degrees_of_freedom_impostor_unaligned": 245.00010223017767
+    },
+    "casia_scale0_imag": {
+      "label": "casia_scale0_imag",
+      "description": "CASIA rows 0-15 (Gabor scale 0, coarse), cols 256-511 = IMAGINARY phase channel. Included to show whether the choice of phase channel matters.",
+      "shape": [
+        16,
+        256
+      ],
+      "n_codes": 1998,
+      "run_length_n_blocks": 1,
+      "mask_valid_fraction_mean": 0.6744002303084334,
+      "run_lengths": {
+        "mean_run_length": 7.47149300930288,
+        "n_runs": 738696,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.04007196465122324,
+          0.06197678070545935,
+          0.0866933082079773,
+          0.11541012811765598,
+          0.13451135514474155,
+          0.12356639267032717,
+          0.09374492348679295,
+          0.06651044543357484,
+          0.0472332326153113,
+          0.03727379057149355,
+          0.030922057246824133,
+          0.025829299197504794,
+          0.02198874773925945,
+          0.018339073177599446,
+          0.015076567356530969,
+          0.012350141330127684,
+          0.010510412943890315,
+          0.008577276714643102,
+          0.007203233806599738,
+          0.04221086888246315
+        ],
+        "histogram_counts_derived": [
+          29601,
+          45782,
+          64040,
+          85253,
+          99363,
+          91278,
+          69249,
+          49131,
+          34891,
+          27534,
+          22842,
+          19080,
+          16243,
+          13547,
+          11137,
+          9123,
+          7764,
+          6336,
+          5321,
+          31181
+        ],
+        "fraction_runs_length_1_or_2": 0.1020487453566826,
+        "modal_run_length": "5",
+        "modal_run_length_fraction": 0.13451135514474155,
+        "tail_fraction_at_or_above_20": 0.04221086888246315
+      },
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.4538917593273002,
+        "std": 0.038833711491707675,
+        "min": 0.23637820780277252,
+        "max": 0.7320099472999573,
+        "median": 0.4544217586517334
+      },
+      "degrees_of_freedom_impostor_unaligned": 164.36647008665773
+    },
+    "sicgen_full": {
+      "label": "sicgen_full",
+      "description": "SIC-Gen whole code (32x512, 512 genuine angular positions, no phase-channel seam).",
+      "shape": [
+        32,
+        512
+      ],
+      "n_codes": 2000,
+      "run_length_n_blocks": 1,
+      "mask_valid_fraction_mean": 0.9399334716796875,
+      "run_lengths": {
+        "mean_run_length": 6.010158033366025,
+        "n_runs": 5124614,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.05774308074715481,
+          0.0391518268497881,
+          0.08189026529607889,
+          0.11645247817689293,
+          0.1511973389605539,
+          0.15178723704848796,
+          0.13518813319403178,
+          0.1055806349512373,
+          0.07109608645646287,
+          0.04159064468075059,
+          0.02091435569586314,
+          0.008318480182117132,
+          0.0039386381101093665,
+          0.0024247679922819554,
+          0.0019609281791760315,
+          0.0018110632332503482,
+          0.0017946717547897267,
+          0.0017622790711651647,
+          0.0016313423801285326,
+          0.0037657470396794766
+        ],
+        "histogram_counts_derived": [
+          295911,
+          200638,
+          419656,
+          596774,
+          774828,
+          777851,
+          692787,
+          541060,
+          364340,
+          213136,
+          107178,
+          42629,
+          20184,
+          12426,
+          10049,
+          9281,
+          9197,
+          9031,
+          8360,
+          19298
+        ],
+        "fraction_runs_length_1_or_2": 0.09689490759694291,
+        "modal_run_length": "6",
+        "modal_run_length_fraction": 0.15178723704848796,
+        "tail_fraction_at_or_above_20": 0.0037657470396794766
+      }
+    }
+  },
+  "phase_channel_comparison": {
+    "casia_scale0_real": {
+      "mean_run_length": 7.007312419541688,
+      "gap_to_sicgen_mean_run_length": 0.9971543861756631,
+      "degrees_of_freedom": 245.00010223017767,
+      "gap_to_sicgen_degrees_of_freedom": 16.020281859949478
+    },
+    "casia_scale0_imag": {
+      "mean_run_length": 7.47149300930288,
+      "gap_to_sicgen_mean_run_length": 1.4613349759368548,
+      "degrees_of_freedom": 164.36647008665773,
+      "gap_to_sicgen_degrees_of_freedom": 64.61335028357047
+    },
+    "closer_on_mean_run_length": "casia_scale0_real",
+    "closer_on_degrees_of_freedom": "casia_scale0_real",
+    "sicgen_mean_run_length": 6.010158033366025,
+    "sicgen_degrees_of_freedom": 228.9798203702282
+  }
+}

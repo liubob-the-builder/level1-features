@@ -1,0 +1,647 @@
+{
+  "metadata": {
+    "purpose": "Test whether the Gabor scale count and the phase-channel layout explain the bit-level gap between real CASIA and SIC-Gen codes, by re-measuring the same statistics with the same estimators on progressively smaller slices of the real (32,512) code.",
+    "analysis_only": "No re-extraction, no retraining, no existing file modified. Reads the codes already exported by casia-extraction/extract_casia.py.",
+    "date": "2026-09-06",
+    "git_commit": "96b39de63d3a079f9b51b65267d0d431a26aceb5",
+    "quick_mode": false,
+    "subject_limit": null,
+    "real": {
+      "data_source": "casia-extraction/casia-codes-2d",
+      "casia_manifest": "casia-extraction/manifest.json",
+      "open_iris_version": "1.11.1",
+      "identity_count_usable": 1998,
+      "subject_selection_rule": "first 1000 subjects, sorted numerically by subject ID",
+      "seeds_used": null,
+      "codes_used": "gallery only (stem '1', image index 00) -- the same set the bit-level comparison used for impostor pairs and run lengths",
+      "excluded_identities": [
+        "524_L",
+        "668_L"
+      ]
+    },
+    "synthetic_reference": {
+      "gallery_path": "sic-gen/sicgen_gallery_2000subjects",
+      "subject_count": 2000,
+      "seed": 20002,
+      "note": "Not recomputed here -- read from the stored bit-level comparison."
+    },
+    "code_layout_verified": {
+      "rows_0_15": "Gabor scale 0 (open-iris pipeline.yaml filter 0: lambda_phi=28.0, kernel_size [41,21], coarse)",
+      "rows_16_31": "Gabor scale 1 (filter 1: lambda_phi=8, kernel_size [17,21], fine)",
+      "cols_0_255": "real phase channel",
+      "cols_256_511": "imaginary phase channel, over the SAME 256 angular positions",
+      "source": "iris/nodes/encoder/iris_encoder.py stacks [real>0, imag>0] on axis=-1 giving (16,256,2) per filter; christina-fhe-fis/filter_fhe_iris_complete.py extract_iris_code concatenates the 2 channels along the angular axis to (16,512) then vstacks the 2 filters to (32,512).",
+      "empirical_confirmation": "Adjacent-column bit agreement is ~0.88 everywhere except across 255|256 where it is 0.41 (the channel seam); agreement between column j and column j+256 is 0.5009 (real/imag in quadrature, near-independent); raw mean run length is ~8.4 in rows 0-15 vs ~3.1 in rows 16-31 (coarse vs fine filter)."
+    },
+    "estimators": {
+      "degrees_of_freedom": "mu(1-mu)/sigma^2 on the UNALIGNED impostor distribution, imported unmodified from experiments/hd_distribution_real_vs_synthetic.py (itself sic-gen/validation.py's estimator).",
+      "run_lengths": "run_length_stats imported unmodified: runs within maximal contiguous valid-bit segments, mask-aware (an occluded bit terminates a run and is not counted), non-circular, walked one phase channel at a time (n_blocks=2 for 512-column regions, n_blocks=1 for 256-column regions) so no run crosses the seam.",
+      "mask_valid_fraction": "mean of the mask over the region (1 = valid).",
+      "impostor_pairs": "unaligned, exhaustive over all gallery pairs, restricted to the region; no sampling and no rotation."
+    },
+    "caveats": [
+      "Each smaller region contains fewer bits (16384 -> 8192 -> 4096 valid-bit budget before masking), so per-pair HD is estimated from fewer samples and the impostor sigma widens partly for that reason alone -- some of the DoF movement across regions is a finite-sample effect, not a change in the underlying bit correlation.",
+      "None of the real regions structurally matches SIC-Gen. A SIC-Gen code is a single continuous 512-angle axis with no phase-channel seam; the real 16x512 regions are 256 angles carried in two quadrature channels, and the real 16x256 regions are 256 angles in one channel. So even an exact numerical match would not mean the two codes have the same structure.",
+      "The synthetic figures are read from the stored bit-level comparison and are not recomputed here; only the real regions were measured for this file."
+    ]
+  },
+  "regions_real": {
+    "full": {
+      "label": "full",
+      "description": "whole code: 2 Gabor scales x 2 phase channels",
+      "rows": [
+        0,
+        32
+      ],
+      "cols": [
+        0,
+        512
+      ],
+      "shape": [
+        32,
+        512
+      ],
+      "n_bits_per_code": 16384,
+      "n_valid_bits_per_code_mean": 11076.03103103103,
+      "run_length_n_blocks": 2,
+      "n_gallery_codes": 1998,
+      "n_impostor_pairs": 1995003,
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.48222029721422427,
+        "std": 0.020038738738654242,
+        "min": 0.37148141860961914,
+        "max": 0.6464771032333374,
+        "median": 0.48226216435432434
+      },
+      "degrees_of_freedom_impostor_unaligned": 621.7986032462841,
+      "mask_valid_fraction_mean": 0.6760272846088276,
+      "run_lengths": {
+        "mean_run_length": 4.074413865656841,
+        "n_runs": 5431434,
+        "fraction_runs_length_1_or_2": 0.3873767038318058,
+        "modal_run_length": "2",
+        "modal_run_length_fraction": 0.2151908685625196,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.17218583526928616,
+          0.2151908685625196,
+          0.18244960723079762,
+          0.128063417506316,
+          0.08108447971566993,
+          0.06021356422631666,
+          0.04437446906286627,
+          0.03150162553756522,
+          0.02104932141309275,
+          0.01454772349254359,
+          0.010470347241630847,
+          0.007936393961521028,
+          0.006290972144741149,
+          0.005049863443061261,
+          0.003935056561490023,
+          0.0030594130389874938,
+          0.002382243805227128,
+          0.0018415026307969497,
+          0.0014675682333615764,
+          0.006905726922208757
+        ]
+      }
+    },
+    "scale0_16x512": {
+      "label": "scale0_16x512",
+      "description": "Gabor scale 0 (coarse, lambda_phi=28), both phase channels",
+      "rows": [
+        0,
+        16
+      ],
+      "cols": [
+        0,
+        512
+      ],
+      "shape": [
+        16,
+        512
+      ],
+      "n_bits_per_code": 8192,
+      "n_valid_bits_per_code_mean": 5429.495495495496,
+      "run_length_n_blocks": 2,
+      "n_gallery_codes": 1998,
+      "n_impostor_pairs": 1995003,
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.47147944377471324,
+        "std": 0.03093532441442541,
+        "min": 0.2916666567325592,
+        "max": 0.7160493731498718,
+        "median": 0.4716283977031708
+      },
+      "degrees_of_freedom_impostor_unaligned": 260.3846007768326,
+      "mask_valid_fraction_mean": 0.6627802118524775,
+      "run_lengths": {
+        "mean_run_length": 7.236029223917294,
+        "n_runs": 1499183,
+        "fraction_runs_length_1_or_2": 0.09910397863369581,
+        "modal_run_length": "6",
+        "modal_run_length_fraction": 0.12586522125717808,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.04090227810747587,
+          0.058201700526219945,
+          0.07700460851010184,
+          0.09989040697499905,
+          0.12038156782727659,
+          0.12586522125717808,
+          0.11225580866378554,
+          0.08911587177816184,
+          0.06319842207388958,
+          0.04552679692872718,
+          0.03375705300820513,
+          0.026250964692102297,
+          0.021246905814700408,
+          0.017287415879182196,
+          0.013618751013051775,
+          0.010667143370755939,
+          0.008349881235312833,
+          0.006476194033683679,
+          0.0052061689600268945,
+          0.024796839345163333
+        ]
+      }
+    },
+    "scale0_16x256": {
+      "label": "scale0_16x256",
+      "description": "Gabor scale 0 (coarse), real phase channel only",
+      "rows": [
+        0,
+        16
+      ],
+      "cols": [
+        0,
+        256
+      ],
+      "shape": [
+        16,
+        256
+      ],
+      "n_bits_per_code": 4096,
+      "n_valid_bits_per_code_mean": 2667.152152152152,
+      "run_length_n_blocks": 1,
+      "n_gallery_codes": 1998,
+      "n_impostor_pairs": 1995003,
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.4902648170486145,
+        "std": 0.03193776613761773,
+        "min": 0.24725274741649628,
+        "max": 0.7790697813034058,
+        "median": 0.4903424084186554
+      },
+      "degrees_of_freedom_impostor_unaligned": 245.00010223017767,
+      "mask_valid_fraction_mean": 0.6511601933965215,
+      "run_lengths": {
+        "mean_run_length": 7.007312419541688,
+        "n_runs": 760487,
+        "fraction_runs_length_1_or_2": 0.09624359127769443,
+        "modal_run_length": "7",
+        "modal_run_length_fraction": 0.13023628280299335,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.04170879975594586,
+          0.05453479152174857,
+          0.06759352888346547,
+          0.08481538803424647,
+          0.10665665553783299,
+          0.1280981791930697,
+          0.13023628280299335,
+          0.11107356207272445,
+          0.0787061448782162,
+          0.05354332158209148,
+          0.03651081478052879,
+          0.026660547780566927,
+          0.020526320634014782,
+          0.016265892776602363,
+          0.0122027069496257,
+          0.009032370047088248,
+          0.006251257417944028,
+          0.004435315791065462,
+          0.0032663280240161894,
+          0.00788179153621298
+        ]
+      }
+    },
+    "scale1_16x512": {
+      "label": "scale1_16x512",
+      "description": "Gabor scale 1 (fine, lambda_phi=8), both phase channels",
+      "rows": [
+        16,
+        32
+      ],
+      "cols": [
+        0,
+        512
+      ],
+      "shape": [
+        16,
+        512
+      ],
+      "n_bits_per_code": 8192,
+      "n_valid_bits_per_code_mean": 5646.535535535536,
+      "run_length_n_blocks": 2,
+      "n_gallery_codes": 1998,
+      "n_impostor_pairs": 1995003,
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.492263936071702,
+        "std": 0.01621288200778975,
+        "min": 0.4030868709087372,
+        "max": 0.632867157459259,
+        "median": 0.4922727346420288
+      },
+      "degrees_of_freedom_impostor_unaligned": 950.8578314464105,
+      "mask_valid_fraction_mean": 0.6892743573651777,
+      "run_lengths": {
+        "mean_run_length": 2.869038115827296,
+        "n_runs": 3932251,
+        "fraction_runs_length_1_or_2": 0.49728158248290866,
+        "modal_run_length": "2",
+        "modal_run_length_fraction": 0.2750434801847593,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.22223810229814933,
+          0.2750434801847593,
+          0.22265084299043983,
+          0.13880446594075505,
+          0.06610234189017944,
+          0.03518366452192396,
+          0.01849449590069403,
+          0.009536013850590922,
+          0.0049798448776540456,
+          0.002736854793857259,
+          0.001592217790776835,
+          0.000953906553777976,
+          0.0005889756274459591,
+          0.00038425827852799836,
+          0.0002431177460441869,
+          0.00015894204108537325,
+          0.00010706335887510741,
+          7.451202886082297e-05,
+          4.221500611227513e-05,
+          8.468431949028686e-05
+        ]
+      }
+    },
+    "scale1_16x256": {
+      "label": "scale1_16x256",
+      "description": "Gabor scale 1 (fine), real phase channel only",
+      "rows": [
+        16,
+        32
+      ],
+      "cols": [
+        0,
+        256
+      ],
+      "shape": [
+        16,
+        256
+      ],
+      "n_bits_per_code": 4096,
+      "n_valid_bits_per_code_mean": 2826.2972972972975,
+      "run_length_n_blocks": 1,
+      "n_gallery_codes": 1998,
+      "n_impostor_pairs": 1995003,
+      "impostor_unaligned": {
+        "n": 1995003,
+        "mean": 0.4978394514785514,
+        "std": 0.01802476109781058,
+        "min": 0.3927576541900635,
+        "max": 0.6240000128746033,
+        "median": 0.49787235260009766
+      },
+      "degrees_of_freedom_impostor_unaligned": 769.4720778265814,
+      "mask_valid_fraction_mean": 0.690013988597973,
+      "run_lengths": {
+        "mean_run_length": 2.993255961262725,
+        "n_runs": 1886555,
+        "fraction_runs_length_1_or_2": 0.4211618532192276,
+        "modal_run_length": "3",
+        "modal_run_length_fraction": 0.25171436825324467,
+        "histogram_bin_labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          ">=20"
+        ],
+        "histogram_normalised": [
+          0.19072542279445867,
+          0.23043643042476897,
+          0.25171436825324467,
+          0.17808598212084992,
+          0.07708018054072105,
+          0.038966263904312355,
+          0.018856593102241918,
+          0.008248368057119988,
+          0.003457095075415241,
+          0.0014640442499688586,
+          0.0005820132463670553,
+          0.00022898881824277585,
+          9.965254127231912e-05,
+          3.604453620488138e-05,
+          1.3251667722382862e-05,
+          4.240533671162516e-06,
+          1.060133417790629e-06,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "synthetic_reference_statistics": {
+    "source": "level1-features/results/hd_distribution_real_vs_synthetic.json",
+    "gallery_path": "sic-gen/sicgen_gallery_2000subjects",
+    "n_gallery_codes": 2000,
+    "shape": [
+      32,
+      512
+    ],
+    "impostor_unaligned": {
+      "n": 1999000,
+      "mean": 0.4978973170779329,
+      "std": 0.03304209373288483,
+      "min": 0.3373446464538574,
+      "max": 0.650780439376831,
+      "median": 0.49792224168777466
+    },
+    "degrees_of_freedom_impostor_unaligned": 228.9798203702282,
+    "mask_valid_fraction_mean": 0.9399334716796875,
+    "run_lengths": {
+      "mean_run_length": 6.010158033366025,
+      "n_runs": 5124614,
+      "fraction_runs_length_1_or_2": 0.09689490759694291,
+      "modal_run_length": "6",
+      "modal_run_length_fraction": 0.15178723704848796,
+      "histogram_bin_labels": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        ">=20"
+      ],
+      "histogram_normalised": [
+        0.05774308074715481,
+        0.0391518268497881,
+        0.08189026529607889,
+        0.11645247817689293,
+        0.1511973389605539,
+        0.15178723704848796,
+        0.13518813319403178,
+        0.1055806349512373,
+        0.07109608645646287,
+        0.04159064468075059,
+        0.02091435569586314,
+        0.008318480182117132,
+        0.0039386381101093665,
+        0.0024247679922819554,
+        0.0019609281791760315,
+        0.0018110632332503482,
+        0.0017946717547897267,
+        0.0017622790711651647,
+        0.0016313423801285326,
+        0.0037657470396794766
+      ]
+    }
+  },
+  "full_region_reproduction_check": {
+    "stored_degrees_of_freedom": 621.7986032462841,
+    "recomputed_degrees_of_freedom": 621.7986032462841,
+    "stored_mean_run_length": 4.074413865656841,
+    "recomputed_mean_run_length": 4.074413865656841,
+    "stored_impostor_unaligned_mean": 0.48222029721422427,
+    "recomputed_impostor_unaligned_mean": 0.48222029721422427,
+    "tolerance_degrees_of_freedom": 0.5,
+    "tolerance_mean_run_length": 0.005,
+    "reproduces_stored_real_statistics": true
+  },
+  "directional_readings": {
+    "scale_count_full_to_scale0_16x512": {
+      "degrees_of_freedom": {
+        "from": 621.7986032462841,
+        "to": 260.3846007768326,
+        "synthetic": 228.9798203702282,
+        "gap_before": 392.8187828760559,
+        "gap_after": 31.404780406604402,
+        "moved_toward_synthetic": true,
+        "overshot_synthetic": false
+      },
+      "mean_run_length": {
+        "from": 4.074413865656841,
+        "to": 7.236029223917294,
+        "synthetic": 6.010158033366025,
+        "gap_before": 1.935744167709184,
+        "gap_after": 1.2258711905512687,
+        "moved_toward_synthetic": true,
+        "overshot_synthetic": true
+      }
+    },
+    "phase_channel_scale0_16x512_to_16x256": {
+      "degrees_of_freedom": {
+        "from": 260.3846007768326,
+        "to": 245.00010223017767,
+        "synthetic": 228.9798203702282,
+        "gap_before": 31.404780406604402,
+        "gap_after": 16.020281859949478,
+        "moved_toward_synthetic": true,
+        "overshot_synthetic": false
+      },
+      "mean_run_length": {
+        "from": 7.236029223917294,
+        "to": 7.007312419541688,
+        "synthetic": 6.010158033366025,
+        "gap_before": 1.2258711905512687,
+        "gap_after": 0.9971543861756631,
+        "moved_toward_synthetic": true,
+        "overshot_synthetic": false
+      }
+    },
+    "scale_count_full_to_scale1_16x512": {
+      "degrees_of_freedom": {
+        "from": 621.7986032462841,
+        "to": 950.8578314464105,
+        "synthetic": 228.9798203702282,
+        "gap_before": 392.8187828760559,
+        "gap_after": 721.8780110761822,
+        "moved_toward_synthetic": false,
+        "overshot_synthetic": false
+      },
+      "mean_run_length": {
+        "from": 4.074413865656841,
+        "to": 2.869038115827296,
+        "synthetic": 6.010158033366025,
+        "gap_before": 1.935744167709184,
+        "gap_after": 3.141119917538729,
+        "moved_toward_synthetic": false,
+        "overshot_synthetic": false
+      }
+    },
+    "phase_channel_scale1_16x512_to_16x256": {
+      "degrees_of_freedom": {
+        "from": 950.8578314464105,
+        "to": 769.4720778265814,
+        "synthetic": 228.9798203702282,
+        "gap_before": 721.8780110761822,
+        "gap_after": 540.4922574563532,
+        "moved_toward_synthetic": true,
+        "overshot_synthetic": false
+      },
+      "mean_run_length": {
+        "from": 2.869038115827296,
+        "to": 2.993255961262725,
+        "synthetic": 6.010158033366025,
+        "gap_before": 3.141119917538729,
+        "gap_after": 3.0169020721033,
+        "moved_toward_synthetic": true,
+        "overshot_synthetic": false
+      }
+    }
+  },
+  "does_synthetic_match_a_single_scale": {
+    "degrees_of_freedom": {
+      "synthetic": 228.9798203702282,
+      "scale0_16x512": 260.3846007768326,
+      "scale1_16x512": 950.8578314464105,
+      "scale0_16x256": 245.00010223017767,
+      "scale1_16x256": 769.4720778265814,
+      "between_the_two_scales_16x512": false,
+      "between_the_two_scales_16x256": false,
+      "nearest_region": "scale0_16x256",
+      "nearest_region_absolute_gap": 16.020281859949478
+    },
+    "mean_run_length": {
+      "synthetic": 6.010158033366025,
+      "scale0_16x512": 7.236029223917294,
+      "scale1_16x512": 2.869038115827296,
+      "scale0_16x256": 7.007312419541688,
+      "scale1_16x256": 2.993255961262725,
+      "between_the_two_scales_16x512": true,
+      "between_the_two_scales_16x256": true,
+      "nearest_region": "scale0_16x256",
+      "nearest_region_absolute_gap": 0.9971543861756631
+    }
+  }
+}
