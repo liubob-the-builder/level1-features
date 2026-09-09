@@ -64,6 +64,218 @@ Galleries live in `../sic-gen/` (the SIC-Gen generator produces them there) and 
 not tracked in this repo; they are regenerable from the recorded seed + process count
 (see each gallery's `metadata.json`).
 
+## Setup
+
+### Python version
+
+
+Two environments were used, and they are **not** interchangeable:
+
+| Environment | Python | Used for | Evidence |
+|---|---|---|---|
+| Analysis — this repo | **3.12.3** (`../.venv`) | everything in `features/` and `experiments/` | the only environment with `torch` and `scipy`; 25 of the 28 `__pycache__` files are `cpython-312`, including `nn_train`, `nn_model`, `nn_dataset` and every `audit_*` |
+| Extraction — `../casia-extraction/` | **3.11.15** (conda env `iris`) | producing the CASIA codes with `open-iris` | the only environment with `open_iris` 1.11.1; every traceback in `results/casia_extraction_manifest.json` is under `python3.11`. `extract_casia.py`'s own docstring says "Run in the `iris` conda env (has open-iris + numpy 1.24.4; the project .venv does not)" |
+
+The extraction environment has neither `torch` nor `scipy`, so it cannot run this repo's NN
+or audit scripts; the analysis environment has no `open-iris`, so it cannot run extraction.
+
+### Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Pinned to the analysis environment: `numpy` 2.4.4, `scipy` 1.18.0, `matplotlib` 3.10.8,
+`torch` 2.13.0 (CPU wheel), `pillow` 12.1.1. Training and every audit script need `torch`;
+`pillow` is needed only by `render_casia_iris_code_image.py`.
+
+### Sibling-directory dependencies
+
+Three directories outside this repo are required. They are not submodules and not tracked
+here — the layout is assumed by `Path(__file__)`-relative constants in the scripts, so the
+repo must sit alongside them:
+
+```
+iris-recognition/
+├── level1-features/     <- this repo
+├── sic-gen/             <- SIC-Gen generator + the synthetic galleries
+├── casia-extraction/    <- real CASIA codes and the extraction script
+└── christina-fhe-fis/   <- Christina's FHE-FIS reference implementation
+```
+
+- **`../sic-gen/`** — supplies the galleries `sicgen_gallery_300subjects/` (Stage 1) and
+  `sicgen_gallery_2000subjects/` (Stage 2/3), and the `template` module imported by
+  `experiments/validate_gen.py`. Without it, every synthetic-data script fails.
+- **`../casia-extraction/`** — supplies `casia-codes-2d/` (used by the DFT/AC/RL features
+  and the NN) and `casia-codes-christina/` (used by Christina's enhanced-RL feature), plus
+  `extract_casia.py`, which produced both. Referenced by 25 path constants across the
+  scripts. Without it, every real-data script fails. See "Data acquisition" below.
+- **`../christina-fhe-fis/`** — read-only reference implementation. Nine scripts do
+  `from filter_fhe_iris_complete import ...` (`FilterFHEConfig`,
+  `compute_enhanced_run_stats`, `compute_l1_distance_plaintext`, `extract_iris_code`,
+  `extract_feature_vector_all_scales`) and `run_christina_rl_casia.py` additionally does
+  `from evaluation import compute_recall_at_k`. Without it those scripts raise `ImportError`
+  at import time, before doing any work.
+
+Note on the warnings her module prints on import: `filter_fhe_iris_complete.py` emits
+`⚠️  TenSEAL not available - using simulation mode` and `⚠️  open-iris not available` when
+those optional packages are missing, and `evaluation.py` emits `⚠️  System import failed: ...`.
+These are **expected** in the analysis environment and are not errors — the plaintext
+feature/distance path this repo uses still runs, as recorded in
+`experiments/christina_full2000.log`, which is the log of a complete successful full-2000 run
+that printed all three.
+
+### Data acquisition
+
+**Synthetic (SIC-Gen) results are fully reproducible from this repo plus `../sic-gen/`.**
+Galleries are regenerable from the recorded seed and process count (see each gallery's
+`metadata.json`) with the edits in `sicgen_modifications.diff` applied.
+
+**Real-data results are not**, because they depend on an externally-obtained,
+licence-restricted dataset and on extraction code that lives outside this repo:
+
+- **CASIA-Iris-Thousand** is a third-party dataset. It is not redistributed here, in any form,
+  and must be obtained separately.
+- Extraction runs **`open-iris` version 1.11.1** (recorded as `open_iris_version` in
+  `results/casia_extraction_manifest.json`, and matching the `open_iris-1.11.1` package in
+  the `iris` conda environment) under Python 3.11.
+- The extraction script itself, `casia-extraction/extract_casia.py`, is **not in this repo**.
+  This repo consumes only its outputs (`casia-codes-2d/`, `casia-codes-christina/`).
+
+So a third party can reproduce the whole synthetic side unaided, and can reproduce the real
+side only after obtaining CASIA and re-running extraction.
+
+## Running
+
+All scripts anchor their paths via `Path(__file__)`, so they run from any working directory;
+the commands below are written from the repository root. Most scripts take no arguments —
+where a script has a command-line interface, its flags are shown.
+
+### 1. Extraction (outside this repo)
+
+Produces the real CASIA codes that every real-data script reads. Run in the Python 3.11
+`iris` environment, from the `casia-extraction/` directory — not from this repo:
+
+```bash
+# in ../casia-extraction/, Python 3.11 env with open-iris 1.11.1
+python extract_casia.py --first-n 1000 --run-label full-1000
+```
+
+`extract_casia.py` requires exactly one of `--subjects <IDs...>` or `--first-n <N>`, and
+takes an optional `--run-label` (default `pilot`) that is recorded in its `manifest.json`.
+It writes `casia-codes-2d/` and `casia-codes-christina/` with the convention stem `1` =
+gallery (image index 00), stems `2`–`10` = probes (indices 01–09).
+
+### 2. Feature evaluation
+
+```bash
+# Stage 1 — DFT bin selection (300-subject synthetic gallery)
+python experiments/stage1_spectrum_inspection.py
+python experiments/stage1_signal_check.py
+
+# Stage 2 — head-to-head DFT/AC/RL-C9/RL-C6 (2000-subject synthetic gallery)
+python experiments/stage2_evaluate.py
+
+# Stage 3 — RRF fusion, consumes Stage 2's saved ranks
+python experiments/stage3_fusion.py
+
+# Real-CASIA evaluation at full scale
+python experiments/eval_myfeatures_realcasia_full2000.py
+python experiments/eval_fusion_realcasia_full2000.py
+```
+
+These take no command-line arguments. **`stage3_fusion.py` requires Stage 2 to have run
+first** — it re-ranks `results/stage2_ranks.npz`.
+
+### 3. NN training
+
+`features/nn_train.py` trains the `CircularConvEncoder`. It builds the identity split
+itself if `--split-path` does not exist (calling `nn_split.build_split` and saving it), so
+running `nn_split.py` separately is optional.
+
+The published **v3 checkpoint** (`results/nn_level1_v3_checkpoint_best.pt`, best epoch 18)
+was produced by this invocation — recovered from `results/nn_level1_v3_train_history.json`,
+whose `hyperparameters` block records `batch_size` 128 with every other value at its
+default, and whose `seeds_used` records `split_seed` 0 / `torch_seed` 0:
+
+```bash
+python features/nn_train.py --batch-size 128 --out-prefix results/nn_level1_v3 --final-eval
+```
+
+That run took ~8.7 hours on CPU (`elapsed_seconds` 31229.6 in the same file).
+
+Flags accepted by `nn_train.py`, with defaults:
+
+| Flag | Default | Flag | Default |
+|---|---|---|---|
+| `--casia-dir` | `../casia-extraction/casia-codes-2d` | `--margin` | `1.0` |
+| `--split-path` | `results/nn_identity_split.json` | `--lr` | `1e-3` |
+| `--val-frac` | `0.15` | `--batch-size` | `64` |
+| `--test-frac` | `0.15` | `--steps-per-epoch` | `200` |
+| `--seed` | `0` | `--epochs` | `20` |
+| `--hidden-channels` | `16,32,64` | `--eval-every` | `1` |
+| `--embedding-dim` | `64` | `--out-prefix` | `results/nn_level1` |
+| `--quant-range` | `127` | `--final-eval` | off (flag) |
+
+`--final-eval` evaluates the best checkpoint on the held-out test split against the full
+train+val+test gallery pool. `--hidden-channels` is not recorded in the training history,
+but the audit scripts reconstruct the v3 encoder with `hidden_channels=(16, 32, 64)` — the
+default — so v3 used the default width.
+
+Then, optionally, the float-vs-quantized comparison:
+
+```bash
+python features/nn_eval_quantized.py \
+    --checkpoint results/nn_level1_v3_checkpoint_best.pt \
+    --out results/nn_level1_v3_quantized_eval.json
+```
+
+### 4. Audit scripts
+
+All of these take no arguments unless shown. Most refuse to overwrite an existing output
+file (they raise `FileExistsError`), so a re-run needs the previous output moved aside
+first. 
+
+```bash
+python experiments/audit_nn_v3_verification.py
+python experiments/audit_shuffle_test.py
+python experiments/audit_all_features_dedup_testsplit.py
+python experiments/audit_heldout_gallery_main.py
+python experiments/audit_maskleak_main.py
+python experiments/audit_maskleak2_main.py
+python experiments/audit_maskleak3_main.py
+python experiments/audit_embcompare_main.py
+python experiments/audit_distributions_main.py
+python experiments/audit_ci_recall_v2_vs_v3.py
+python experiments/audit_singlescale_regions.py [--quick]
+python experiments/audit_singlescale_runlength_hist.py
+python experiments/add_hd_histograms.py [--dry-run] [--force]
+```
+
+**Ordering constraints.** These are read off the scripts' imports and their file reads, and
+are the only ones verifiable from the code:
+
+| Script | Requires first |
+|---|---|
+| `audit_maskleak2_main.py` | imports `audit_maskleak_main`; reads `results/audit_maskleak_results.json` |
+| `audit_maskleak3_main.py` | imports `audit_maskleak_main` and `audit_maskleak2_main`; reads `results/audit_maskleak2_results.json` and `results/audit_all_features_dedup_testsplit.json` |
+| `audit_embcompare_main.py` | imports `audit_maskleak_main`; reads `results/audit_all_features_dedup_testsplit.json` |
+| `audit_distributions_main.py` | imports `audit_maskleak_main` and `audit_all_features_dedup_testsplit`; reads `results/audit_all_features_dedup_testsplit.json` |
+| `audit_ci_recall_v2_vs_v3.py` | needs both `nn_level1_v2_checkpoint_best.pt` and `nn_level1_v3_checkpoint_best.pt` |
+| `audit_singlescale_regions.py` | reads `results/hd_distribution_real_vs_synthetic.json` (run `experiments/hd_distribution_real_vs_synthetic.py` first) |
+| `audit_singlescale_runlength_hist.py` | reads `results/hd_distribution_real_vs_synthetic.json` and `results/audit_singlescale_results.json` |
+| `add_hd_histograms.py` | reads and then edits `results/hd_distribution_real_vs_synthetic.json` in place; also reads `results/audit_singlescale_results.json` |
+
+`audit_maskleak_main.py`, `audit_distributions_main.py`, `audit_embcompare_main.py`,
+`audit_ci_recall_v2_vs_v3.py` and `audit_all_features_dedup_testsplit.py` all read
+`results/audit_nn_v3_dedup_metrics.json` as their reference baseline and abort if their
+recomputation disagrees with it.
+
+
+`add_hd_histograms.py` is the one script that modifies an existing result file rather than
+writing a new one; it is additive, verifies all six stored distributions before writing, and
+`--dry-run` reports what it would change without writing.
+
 ## Local modification to the generator
 
 `downsampling_every_n_row` / `downsampling_every_n_column` in `sic-gen.py` were changed
@@ -120,6 +332,10 @@ A learned, mask-aware, BFV-compatible alternative to the hand-crafted Level-1 fe
 | File | What it does |
 |---|---|
 | `validate_gen.py` | Standalone genuine/impostor fractional-HD check (aligned ±*r* vs unaligned) for a generated directory; two-panel histogram. General sanity check, not part of Stage 1/2/3. |
+| `hd_distribution_real_vs_synthetic.py` | Bit-level real-vs-synthetic comparison under one method: genuine/impostor fractional-HD distributions (aligned ±*r* and unaligned), degrees of freedom via SIC-Gen's own `mu(1-mu)/sigma^2` estimator, mask valid-bit fraction, and mask-aware run-length distributions, for the full 2000-subject SIC-Gen gallery and all 1998 usable real CASIA identities. All pairs used exhaustively (no sampling) via a matrix-product formulation of fractional HD. Rotation is a full-width roll for SIC-Gen (512 angular positions) and a per-channel roll for real codes (two 256-column phase channels over the same angles); both conventions are measured on the real data and recorded. Supersedes `validate_gen.py`, which covered the synthetic side only, on a 100-subject directory, and saved no numeric output. |
+| `audit_singlescale_regions.py` | Tests whether the Gabor scale count and phase-channel layout account for the bit-level real-vs-synthetic gap, by re-measuring unaligned impostor HD, degrees of freedom, mask valid fraction and mask-aware run lengths — estimators imported unmodified from `hd_distribution_real_vs_synthetic.py` — on five slices of the real (32,512) code: full, and each Gabor scale (rows 0–15 coarse, rows 16–31 fine) at both 16×512 (both phase channels) and 16×256 (real channel only). Analysis-only on the existing CASIA export; verifies the full region reproduces the stored real statistics before reporting the slices. |
+| `add_hd_histograms.py` | Adds binned HD distributions to `results/hd_distribution_real_vs_synthetic.json` in place (additive only): `bin_edges` / `histogram_density` / `fraction_above_range` on each of the six genuine/impostor distributions, 130 shared bins over HD 0–0.65, density-normalised so the genuine and impostor sets are comparable on one axis. Recomputes the values with the original code and aborts unless all six match the stored n/mean/std/min/max/median, so a plot can be drawn from the measured shape instead of a normal density fitted to mean/std. |
+| `audit_singlescale_runlength_hist.py` | Plot-ready run-length distributions for the coarse single-scale single-phase CASIA region (rows 0–15, cols 0–255 = real phase channel — the slice closest to SIC-Gen) against SIC-Gen's whole code, plus the same scale's imaginary channel (cols 256–511) so the phase-channel choice can be checked. `run_length_stats` imported unmodified; also reports degrees of freedom per CASIA channel. Verifies SIC-Gen's mean run length against the stored comparison before writing. |
 | `run_christina_rl.py` | Runs Christina's enhanced-RL feature (`compute_enhanced_run_stats`/`compute_l1_distance_plaintext` from `christina-fhe-fis/filter_fhe_iris_complete.py`, imported read-only) on the 300-subject gallery under both SIC-Gen mask conventions (raw vs. inverted), reporting Recall@K/median/mean rank/dimension/dropped-row-% side by side via her own `compute_recall_at_k`. |
 | `run_christina_rl_full2000.py` | Extends `run_christina_rl.py` to the full 2000-subject SIC-Gen gallery (no sampling), same single-scale `(1,32,512)` code shape and both mask conventions, for direct comparison against the 300-subject run at full Stage-2 scale. |
 | `run_christina_rl_casia.py` | Real-CASIA replication of `run_christina_rl.py`: runs her feature (unmodified, `(32,512)` codes fed with no reshaping, reproducing her real 32-pseudo-scale behavior) on 300 real CASIA-Iris-Thousand identities from `casia-extraction/casia-codes-christina/` under both mask conventions, and compares Recall@50 against the paper's reported real-CASIA RL figure. |
@@ -134,6 +350,12 @@ A learned, mask-aware, BFV-compatible alternative to the hand-crafted Level-1 fe
 | `eval_all_features_nn_testsplit.py` | Head-to-head comparison of all Level-1 features (mask-aware DFT/AC/RL-C9/RL-C6, Christina's enhanced-RL under both mask conventions, and the learned NN v3) on the identical held-out split used for the NN's final test evaluation: probes = only the 299 `nn_identity_split.json` test identities, gallery = the full 1998-identity pool, matching `nn_train.py --final-eval`'s protocol exactly for a fair apples-to-apples comparison. |
 | `audit_nn_v3_verification.py` | Read-only adversarial audit of the NN v3 result: split disjointness, gallery/probe construction, quantization consistency, distance/ranking correctness (incl. manual per-probe spot-checks), a random-embedding chance-floor baseline, rank-distribution recomputation, and monotonicity/BatchNorm/dev-pool checks — all independently re-derived from the real checkpoint rather than trusting stored summaries. |
 | `audit_shuffle_test.py` | Label-shuffle leakage detector: trains a throwaway model (never touches any real checkpoint) with the probe↔gallery identity correspondence derangement-scrambled within every batch, then evaluates it on the real test protocol to confirm recall collapses toward chance. |
+| `audit_maskleak_main.py` | Mask-geometry leakage audit for NN v3: mask-only 32-dim baseline (no model), mask-channel-swap-at-inference ablation (3 seeds, isolating the conv stack's soft-masking pathway from the hard pooling gate), and embedding-distance-vs-mask-distance correlation on impostor pairs — all on the same 299-identity/1998-gallery/2488-dedup-probe protocol as `audit_nn_v3_dedup_metrics.json`. |
+| `audit_maskleak2_main.py` | Part 2 of the mask-geometry leakage audit (imports `audit_maskleak_main.py` unmodified): constant-mask (all-ones) channel-1 ablation, mask-dissimilarity stratification of genuine pairs (quartiles of 1-IoU and of row-validity-profile distance, with per-quartile recall/rank/genuine-and-impostor-distance), and partial Pearson/Spearman between embedding and mask-profile distance on impostor pairs controlling for total mask validity. |
+| `audit_maskleak3_main.py` | Part 3 (imports `audit_maskleak_main.py`/`audit_maskleak2_main.py` unmodified): repeats Check 5's genuine-pair IoU-dissimilarity quartile stratification for mask-aware DFT/AC/RL-C9, verifying the reconstructed quartile assignment reproduces `audit_maskleak2_results.json`'s stored NN v3 per-quartile numbers exactly before reporting; combined NN-v3-vs-hand-feature table plus each feature's Q1-to-Q4 relative recall drop. |
+| `audit_embcompare_main.py` | Representation-overlap and error-correlation audit between NN v3 (quantized, imports `audit_maskleak_main.py` unmodified) and each hand-designed feature (DFT/AC/RL-C9/RL-C6): hand-implemented CCA and OLS regression (no sklearn available), with self-checks (self-pairing ≈1.0, random-pairing low) and condition-number/near-singularity reporting for every whitened/inverted covariance, over the union of gallery+probe vectors; plus per-probe-rank Spearman correlation, Jaccard failure-set overlap at K=10/50, and rescue counts on the matched 299/1998/2488-dedup protocol. |
+| `audit_distributions_main.py` | Full genuine/impostor distance distributions for the learned NN v3 embedding (SSD on the quantized embedding) and Christina's enhanced-RL feature (L1, inverted/fixed mask convention) on the matched 299-identity/1998-gallery/2488-dedup-probe protocol (imports `audit_maskleak_main.py`/`audit_all_features_dedup_testsplit.py` unmodified); emits fine-resolution histograms (512 shared-edge bins per feature for overlay, plus 256 own-range bins per set) rather than raw distance arrays, with per-feature bin ranges since the two metrics are not on a common axis, and aborts unless ranks re-derived from the same distance matrices reproduce the published de-duplicated numbers. |
+| `render_casia_iris_code_image.py` | Renders a CASIA iris code as a bare binary raster PNG in the `casia_iris_code_example_tall.png` format (unmasked `casia-codes-2d` (32,512) template, bit 1 = white, nearest-neighbour 16x/3x to 1536x512 RGBA, no axes or labels); accepts a CASIA image name (`--image S5079R07.jpg`, mapped to identity/stem via `extract_casia.stem_for_index`) or an explicit `--identity`/`--stem`, and `--verify-format` proves it reproduces the reference PNG pixel-exactly before writing. |
 
 ## Results (`results/`)
 
@@ -144,8 +366,14 @@ JSONs, the negative-control and row-redundancy data, and the plots.
 
 ## Reproducing
 
+See **Setup** for the environment, the three required sibling directories and the CASIA
+licensing position, and **Running** for the command for each stage. In short:
+
 - Galleries: regenerable from `../sic-gen` with the recorded seed and process count
   (see each gallery's `metadata.json`), plus the edits in `sicgen_modifications.diff`.
 - Environment: `pip install -r requirements.txt`.
 - Run scripts from the repository root (paths are anchored via `Path(__file__)`, so
   they resolve regardless of working directory).
+- The synthetic results reproduce from this repo and `../sic-gen` alone. The real-data
+  results additionally require CASIA-Iris-Thousand and the extraction step
+  in `../casia-extraction/`, neither of which is contained in this repo.

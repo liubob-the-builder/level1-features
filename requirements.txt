@@ -1,4 +1,22 @@
-numpy
-scipy
-matplotlib
-opencv-python
+# Runtime dependencies for this repo (features/ and experiments/).
+#
+# Versions are pinned to the analysis environment that produced everything in results/:
+# ../.venv, Python 3.12.3. See the "Setup" section of README.md.
+#
+# Deliberately NOT listed here, because they are not pip packages installed into this
+# environment -- see README.md "Setup / Sibling-directory dependencies":
+#   filter_fhe_iris_complete, evaluation  ->  ../christina-fhe-fis/   (sibling checkout)
+#   template                              ->  ../sic-gen/             (sibling checkout)
+#   open-iris 1.11.1                      ->  extraction only, in a separate Python 3.11
+#                                             environment; not importable by this repo.
+
+numpy==2.4.4
+scipy==1.18.0
+matplotlib==3.10.8
+
+# Required by features/nn_*.py and every experiments/audit_*.py (19 import sites).
+# Installed in the analysis environment as the CPU wheel, 2.13.0+cpu.
+torch==2.13.0
+
+# PIL, used by experiments/render_casia_iris_code_image.py.
+pillow==12.1.1
